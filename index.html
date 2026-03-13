@@ -178,6 +178,13 @@
       font-size: 0.75rem;
       color: var(--gray);
     }
+    .feedback-link {
+      font-size: 0.75rem;
+      color: var(--green);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .feedback-link:hover { color: var(--orange); }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -204,16 +211,11 @@
       font-size: 0.95rem;
     }
     td.rank {
-      color: var(--yellow);
+      color: var(--fg2);
       font-weight: bold;
       font-size: 1.1rem;
       width: 60px;
     }
-    td.rank[data-rank="1"] { color: var(--yellow); }
-    td.rank[data-rank="2"] { color: #ffffff; }
-    td.rank[data-rank="3"] { color: var(--bronze); }
-    td.rank[data-rank="4"],
-    td.rank[data-rank="5"] { color: var(--fg2); }
     td.tool-name { color: var(--fg); }
     td.tool-name a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
     td.tool-name a:hover { color: var(--yellow); }
@@ -397,7 +399,10 @@
     .tt-neg { color: var(--red); }
     .tt-price { color: var(--blue); }
     #tt ul { padding-left: 0.9rem; }
-    #tt ul li { color: var(--fg2); margin-bottom: 0.18rem; line-height: 1.4; }
+    #tt-pos, #tt-neg, #tm-pos, #tm-neg { list-style: none; padding-left: 0; }
+    #tt ul li, .modal ul#tm-pos li, .modal ul#tm-neg li { color: var(--fg2); margin-bottom: 0.18rem; line-height: 1.4; }
+    #tt-pos li::before, #tm-pos li::before { content: "+ "; color: var(--green); font-weight: bold; }
+    #tt-neg li::before, #tm-neg li::before { content: "− "; color: var(--red); font-weight: bold; }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
@@ -433,16 +438,21 @@
         <div class="rankings-header-left">
           <h2>Industry:</h2>
           <select id="industry-select" onchange="renderTable()">
-            <option value="bizdev">Business Development</option>
-            <option value="content">Content Creation &amp; Media</option>
-            <option value="cx">Customer Support</option>
-            <option value="design">Digital Design</option>
-            <option value="finance">Finance &amp; Accounting</option>
-            <option value="health">Healthcare</option>
-            <option value="hr">HR &amp; Recruitment</option>
-            <option value="legal">Legal</option>
-            <option value="marketing">Marketing</option>
-            <option value="software">Software Development</option>
+            <option value="agriculture">Agriculture &amp; Regional Businesses</option>
+            <option value="creative">Creative, Marketing &amp; Digital Agencies</option>
+            <option value="education">Education, Training &amp; Tutoring</option>
+            <option value="healthcare">Healthcare, Allied Health &amp; Care Providers</option>
+            <option value="hospitality">Hospitality, Tourism &amp; Events</option>
+            <option value="manufacturing">Manufacturing, Fabrication &amp; Workshops</option>
+            <option value="nonprofits">Non-profits, Associations &amp; Community Organisations</option>
+            <option value="creators">Online Creators, Coaches &amp; Info Businesses</option>
+            <option value="personal">Personal, Fitness &amp; Lifestyle Services</option>
+            <option value="professional">Professional, Financial &amp; Legal Services</option>
+            <option value="realestate">Real Estate &amp; Property Management</option>
+            <option value="retail">Retail, E-commerce &amp; Consumer Brands</option>
+            <option value="technology">Technology, IT &amp; Software Firms</option>
+            <option value="trades">Trades, Construction &amp; Property Services</option>
+            <option value="transport">Transport, Logistics &amp; Field Services</option>
           </select>
         </div>
       </div>
@@ -455,14 +465,15 @@
         </thead>
         <tbody id="rankings-body"></tbody>
       </table>
-      <div style="padding: 0.4rem 1.2rem; border-top: 1px solid var(--bg2);">
+      <div style="padding: 0.4rem 1.2rem; border-top: 1px solid var(--bg2); display: flex; justify-content: space-between; align-items: center;">
         <span class="updated-tag" id="updated-tag"></span>
+        <a href="#" class="feedback-link" onclick="openModal('feedback-modal'); return false;">Provide feedback</a>
       </div>
     </div>
 
     <!-- CTA line -->
     <div class="cta-line">
-      Want personalised advice on implementing AI tools and workflows in your business?
+      Want help implementing AI tools and workflows in your business?
       <a href="#" onclick="openModal('contact-modal'); return false;">Get in touch &rarr;</a>
     </div>
 
@@ -483,7 +494,7 @@
     <div class="modal-frame">
       <button class="modal-close" onclick="closeModal('contact-modal')" aria-label="Close">&times;</button>
       <div class="modal">
-      <h2>Get Personal AI Advice</h2>
+      <h2>Get Help</h2>
       <p>Tell me about your business and I'll help you identify the right AI tools and workflows to save time and grow faster.</p>
       <form onsubmit="handleContact(event)">
         <div>
@@ -498,16 +509,19 @@
           <label for="c-industry">Your Industry</label>
           <select id="c-industry">
             <option value="">Select an industry…</option>
-            <option>Software Development</option>
-            <option>Digital Design</option>
-            <option>Marketing</option>
             <option>Business Development</option>
-            <option>Finance &amp; Accounting</option>
-            <option>Legal</option>
-            <option>HR &amp; Recruitment</option>
-            <option>Customer Support</option>
-            <option>Healthcare</option>
             <option>Content Creation &amp; Media</option>
+            <option>Customer Support</option>
+            <option>Cybersecurity</option>
+            <option>Digital Design</option>
+            <option>Finance &amp; Accounting</option>
+            <option>Healthcare</option>
+            <option>HR &amp; Recruitment</option>
+            <option>ICT</option>
+            <option>Legal</option>
+            <option>Marketing</option>
+            <option>Risk &amp; Compliance</option>
+            <option>Software Development</option>
             <option>Other</option>
           </select>
         </div>
@@ -582,11 +596,9 @@
       </div>
       <p id="tm-desc" style="color:var(--fg2);font-size:0.85rem;line-height:1.6;margin-bottom:0.9rem"></p>
       <div class="tt-section">
-        <div class="tt-label tt-pos">Positives</div>
         <ul id="tm-pos"></ul>
       </div>
       <div class="tt-section">
-        <div class="tt-label tt-neg">Negatives</div>
         <ul id="tm-neg"></ul>
       </div>
       <div class="tt-section" id="tm-price-section">
@@ -594,6 +606,43 @@
         <ul id="tm-price"></ul>
       </div>
       <a id="tm-link" href="#" target="_blank" rel="noopener noreferrer" class="btn" style="display:block;text-align:center;margin-top:0.6rem">Visit Website &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MODAL: Feedback ══════════ -->
+  <div class="modal-overlay" id="feedback-modal">
+    <div class="modal-frame">
+      <button class="modal-close" onclick="closeModal('feedback-modal')" aria-label="Close">&times;</button>
+      <div class="modal">
+      <h2>Provide Feedback</h2>
+      <p>Help improve AI Tool Tips — let me know what you'd like to see changed or added.</p>
+      <form onsubmit="handleFeedback(event)">
+        <div>
+          <label for="fb-type">Feedback type</label>
+          <select id="fb-type" required>
+            <option value="">Select a category…</option>
+            <option>Aesthetics &amp; Layout</option>
+            <option>New Feature</option>
+            <option>New Industry</option>
+            <option>Tool Ranking</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="fb-msg">Details</label>
+          <textarea id="fb-msg" placeholder="e.g. Add a dark/light mode toggle, include the Construction industry, rank Notion higher in Content…" required></textarea>
+        </div>
+        <div>
+          <label for="fb-name">Name <span style="color:var(--gray);font-weight:normal;text-transform:none">(optional)</span></label>
+          <input type="text" id="fb-name" placeholder="Jane Smith" />
+        </div>
+        <div>
+          <label for="fb-email">Email <span style="color:var(--gray);font-weight:normal;text-transform:none">(optional — for follow-up)</span></label>
+          <input type="email" id="fb-email" placeholder="jane@company.com" />
+        </div>
+        <button type="submit" class="btn">Send Feedback</button>
+      </form>
       </div>
     </div>
   </div>
@@ -609,11 +658,9 @@
     </div>
     <p id="tt-desc"></p>
     <div class="tt-section">
-      <div class="tt-label tt-pos">Positives</div>
       <ul id="tt-pos"></ul>
     </div>
     <div class="tt-section">
-      <div class="tt-label tt-neg">Negatives</div>
       <ul id="tt-neg"></ul>
     </div>
     <div class="tt-section" id="tt-price-section">
@@ -626,304 +673,454 @@
   <script>
     // ── Data ───────────────────────────────────────────────────────────────
     const data = {
-      bizdev: {
-        label: "Business Development",
+      agriculture: {
+        label: "Agriculture & Regional Businesses",
         tools: [
-          { name: "Apollo.io", url: "https://www.apollo.io", icon: "https://www.google.com/s2/favicons?domain=apollo.io&sz=64",
-            description: "All-in-one sales intelligence platform with 275M+ B2B contacts, email sequencing, and AI-powered prospecting.",
-            positives: ["Massive verified contact database", "Built-in email sequencing & dialers", "Strong Chrome extension for LinkedIn"],
-            negatives: ["Data accuracy inconsistent on niche contacts", "UI can feel cluttered", "Premium tiers costly for small teams"],
-            price: ["Free (50 credits/mo)", "Basic — $49/user/mo", "Professional — $79/user/mo", "Organization — $119/user/mo"] },
-          { name: "Gong.io", url: "https://www.gong.io", icon: "https://www.google.com/s2/favicons?domain=gong.io&sz=64",
-            description: "Revenue intelligence platform that records, transcribes, and analyses sales calls to surface winning behaviours.",
-            positives: ["Deep call analytics and coaching insights", "CRM auto-population saves reps time", "Tracks deal risk proactively"],
-            negatives: ["Expensive — pricing not public", "Requires org-wide buy-in", "Can feel intrusive to sales reps"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Salesforce Einstein", url: "https://www.salesforce.com/products/einstein", icon: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64",
-            description: "AI layer built into Salesforce CRM offering predictive lead scoring, opportunity insights, and automated activity capture.",
-            positives: ["Native to Salesforce — no integration needed", "Predictive scoring improves rep prioritisation", "Continuously learns from CRM data"],
-            negatives: ["Only useful if already on Salesforce", "Requires clean CRM data to be effective", "Additional licence cost on top of Salesforce"],
-            price: ["Einstein 1 Sales — from $500/user/mo"] },
-          { name: "Clay", url: "https://www.clay.com", icon: "https://www.google.com/s2/favicons?domain=clay.com&sz=64",
-            description: "Data enrichment and outreach automation that pulls from 75+ sources to build hyper-personalised prospect lists.",
-            positives: ["75+ enrichment providers in one tool", "Highly flexible workflow builder", "AI-written personalised outreach at scale"],
-            negatives: ["Steep learning curve for non-technical users", "Credit model can get expensive", "Requires separate outreach tool"],
-            price: ["Free (100 credits/mo)", "Starter — $149/mo", "Explorer — $349/mo", "Pro — $800/mo"] },
-          { name: "LinkedIn Sales Navigator", url: "https://business.linkedin.com/sales-solutions/sales-navigator", icon: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64",
-            description: "LinkedIn's premium sales tool for advanced prospect search, lead recommendations, and real-time account alerts.",
-            positives: ["Access to LinkedIn's 1B+ member graph", "Advanced filters for targeted searches", "Real-time job change and news alerts"],
-            negatives: ["Expensive relative to feature depth", "InMail credits limited on lower tiers", "Data only as good as member profiles"],
-            price: ["Core — $99.99/user/mo", "Advanced — $179.99/user/mo", "Advanced Plus — custom"] },
+          { name: "Agworld", url: "https://www.agworld.com.au", icon: "https://www.google.com/s2/favicons?domain=agworld.com.au&sz=64",
+            description: "Cloud-based farm management platform for planning, recording, and analysing crop inputs, agronomist recommendations, and field activities.",
+            positives: ["Strong agronomist collaboration tools", "Mobile-first with offline capability", "Integrates with leading agri-suppliers"],
+            negatives: ["Pricing adds up for large operations", "Learning curve for non-tech farmers", "Limited livestock module compared to cropping"],
+            price: ["Starter — $49/farm/mo", "Professional — $99/farm/mo", "Enterprise — contact for pricing"] },
+          { name: "Trimble Agriculture", url: "https://agriculture.trimble.com", icon: "https://www.google.com/s2/favicons?domain=trimble.com&sz=64",
+            description: "Precision agriculture platform combining GPS guidance, field data collection, and farm management software for large-scale operations.",
+            positives: ["Industry-leading GPS and auto-steer accuracy", "Comprehensive fleet and equipment tracking", "Strong ecosystem of hardware integrations"],
+            negatives: ["Hardware costs are significant", "Software complexity requires training", "Best suited for large broadacre farms"],
+            price: ["Trimble Ag Software — from $1,500/yr", "Hardware bundles — contact dealer"] },
+          { name: "The Yield", url: "https://www.theyield.com", icon: "https://www.google.com/s2/favicons?domain=theyield.com&sz=64",
+            description: "AI-powered microclimate sensing and forecasting platform that helps growers make better decisions on irrigation, harvesting, and pest management.",
+            positives: ["Hyper-local weather and forecast data", "Reduces water usage and input costs", "Used by major Australian and US growers"],
+            negatives: ["Hardware installation required for full value", "Premium pricing suits commercial growers", "Limited crop variety support in some regions"],
+            price: ["Contact The Yield for pricing"] },
+          { name: "Figured", url: "https://www.figured.com", icon: "https://www.google.com/s2/favicons?domain=figured.com&sz=64",
+            description: "Farm financial management software that connects with Xero and MYOB to give farmers real-time visibility of farm performance and budgets.",
+            positives: ["Purpose-built for farm accounting and budgeting", "Seamless Xero integration", "Supports multiple farm entities and livestock valuations"],
+            negatives: ["Requires accountant/advisor for full setup", "Less useful without Xero", "Limited to financial management — not operational planning"],
+            price: ["From $65/farm/mo — contact for full pricing"] },
+          { name: "Granular", url: "https://www.granular.ag", icon: "https://www.google.com/s2/favicons?domain=granular.ag&sz=64",
+            description: "Farm management software by Corteva offering field planning, operational tracking, and profitability analytics for large cropping operations.",
+            positives: ["Deep profitability analytics by field and crop", "Strong integration with crop planning workflows", "Trusted by large commercial grain operations"],
+            negatives: ["US-market focus limits Australian support", "High cost for smaller operations", "Implementation takes time to configure correctly"],
+            price: ["Contact Granular/Corteva for pricing"] },
         ]
       },
-      content: {
-        label: "Content Creation & Media",
+      creative: {
+        label: "Creative, Marketing & Digital Agencies",
         tools: [
+          { name: "HubSpot", url: "https://www.hubspot.com", icon: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64",
+            description: "All-in-one inbound marketing, CRM, and sales platform with AI-powered content tools, SEO recommendations, and campaign reporting.",
+            positives: ["Free tier is genuinely useful for small agencies", "Excellent CRM tightly integrated with marketing tools", "Strong reporting and attribution"],
+            negatives: ["Costs scale quickly with contacts and features", "Some marketing tools lag specialist competitors", "Onboarding can be lengthy for full platform"],
+            price: ["Free tier available", "Starter — $18/mo", "Professional — $800/mo", "Enterprise — $3,600/mo"] },
+          { name: "Semrush", url: "https://www.semrush.com", icon: "https://www.google.com/s2/favicons?domain=semrush.com&sz=64",
+            description: "Comprehensive SEO, content marketing, and competitive intelligence platform used by agencies to research, plan, and track digital campaigns.",
+            positives: ["Best-in-class keyword and competitor research", "Content marketing and site audit tools built in", "White-label reporting for client delivery"],
+            negatives: ["Expensive for solo freelancers", "Data accuracy can vary for niche markets", "Interface can overwhelm new users"],
+            price: ["Pro — $139/mo", "Guru — $249/mo", "Business — $499/mo"] },
+          { name: "Jasper AI", url: "https://www.jasper.ai", icon: "https://www.google.com/s2/favicons?domain=jasper.ai&sz=64",
+            description: "AI writing assistant built for marketing teams, with brand voice training, multi-format content generation, and campaign workflow tools.",
+            positives: ["Brand voice and style consistency at scale", "Purpose-built marketing templates and workflows", "Integrates with Surfer SEO for optimised content"],
+            negatives: ["Output still needs human editing and fact-checking", "Expensive for low-volume users", "Dependent on quality of inputs and brief"],
+            price: ["Creator — $49/mo", "Pro — $69/mo", "Business — contact for pricing"] },
+          { name: "Later", url: "https://www.later.com", icon: "https://www.google.com/s2/favicons?domain=later.com&sz=64",
+            description: "Visual social media scheduling and analytics platform with AI caption writing, best-time-to-post suggestions, and link-in-bio tools.",
+            positives: ["Intuitive drag-and-drop calendar", "Strong Instagram and TikTok support", "Link-in-bio tool included"],
+            negatives: ["Analytics less deep than Sprout Social", "Limited LinkedIn functionality", "Some features restricted by platform APIs"],
+            price: ["Starter — $18/mo", "Growth — $40/mo", "Advanced — $80/mo", "Agency — $200/mo"] },
+          { name: "Canva Pro", url: "https://www.canva.com/pro", icon: "https://www.google.com/s2/favicons?domain=canva.com&sz=64",
+            description: "Browser-based design platform with AI image generation, brand kits, Magic Resize, and thousands of agency-ready templates.",
+            positives: ["Extremely fast for social, decks, and print production", "AI tools built directly into design workflow", "Team brand kits ensure consistency across clients"],
+            negatives: ["Not a replacement for Illustrator/Photoshop for complex work", "Print quality can be inconsistent", "AI image generation still limited vs. Midjourney"],
+            price: ["Pro — $17/mo per person", "Teams — $30/mo (first 5 users)"] },
+        ]
+      },
+      education: {
+        label: "Education, Training & Tutoring",
+        tools: [
+          { name: "Articulate 360", url: "https://www.articulate.com/360", icon: "https://www.google.com/s2/favicons?domain=articulate.com&sz=64",
+            description: "Industry-standard eLearning authoring suite including Storyline 360 and Rise 360 for building interactive courses and modules for RTOs and corporate trainers.",
+            positives: ["Storyline is the gold standard for interactive eLearning", "Rise 360 enables fast, responsive course creation", "Strong community and template library"],
+            negatives: ["Steep learning curve for Storyline", "Subscription required — no perpetual licence", "Output hosted on Review 360 only unless exported"],
+            price: ["Personal — $1,299/yr", "Teams — $1,499/seat/yr"] },
+          { name: "Teachable", url: "https://www.teachable.com", icon: "https://www.google.com/s2/favicons?domain=teachable.com&sz=64",
+            description: "Course creation and monetisation platform for tutors, coaches, and training providers selling online programs directly to students.",
+            positives: ["Simple to publish and sell courses with no code", "Integrated payments and affiliate management", "Strong community and coaching product features"],
+            negatives: ["Transaction fees on lower tiers", "Limited customisation on free/basic plans", "Less suitable for compliance-heavy RTO requirements"],
+            price: ["Free (5% transaction fee)", "Basic — $39/mo", "Pro — $119/mo", "Pro+ — $199/mo"] },
+          { name: "Kahoot!", url: "https://www.kahoot.com", icon: "https://www.google.com/s2/favicons?domain=kahoot.com&sz=64",
+            description: "Gamified learning platform for creating live quizzes, polls, and challenges used in classrooms, corporate training, and remote learning sessions.",
+            positives: ["Instantly engaging for live and async learning", "Easy to create and run sessions", "Wide adoption means participants need no training"],
+            negatives: ["Best for knowledge checks, not deep learning", "Some features locked to paid plans", "Less useful for complex training scenarios"],
+            price: ["Free (basic)", "Pro — $17/mo", "Business — $34/mo per host", "Teams — contact for pricing"] },
+          { name: "Canva for Education", url: "https://www.canva.com/education", icon: "https://www.google.com/s2/favicons?domain=canva.com&sz=64",
+            description: "Free design platform for educators and students with classroom management features, presentation tools, AI image generation, and thousands of education templates.",
+            positives: ["Free for K-12 teachers and students", "AI Magic Write and image tools built in", "Classroom management and assignment features"],
+            negatives: ["Education version has fewer Pro features than paid tier", "Not purpose-built for structured course delivery", "Requires internet for most functionality"],
+            price: ["Free for verified educators and students", "Canva Pro — $17/mo for other use cases"] },
+          { name: "Grammarly Business", url: "https://www.grammarly.com/business", icon: "https://www.google.com/s2/favicons?domain=grammarly.com&sz=64",
+            description: "AI writing assistant that improves grammar, clarity, tone, and style — used across RTOs, tutoring centres, and training teams to maintain professional communications.",
+            positives: ["Real-time corrections across email, docs, and LMS", "Tone and style adjustments for different audiences", "Centralised team billing and admin"],
+            negatives: ["AI suggestions occasionally miss context or voice", "Not a substitute for a human editor on critical documents", "Business tier pricing adds up for large teams"],
+            price: ["Free (limited)", "Premium — $12/mo", "Business — $15/member/mo"] },
+        ]
+      },
+      healthcare: {
+        label: "Healthcare, Allied Health & Care Providers",
+        tools: [
+          { name: "Heidi Health", url: "https://www.heidihealth.com", icon: "https://www.google.com/s2/favicons?domain=heidihealth.com&sz=64",
+            description: "AI medical scribe that listens to consultations and generates structured clinical notes in real time, freeing clinicians from documentation burdens.",
+            positives: ["Dramatically reduces time spent on clinical notes", "Supports a wide range of clinical note formats", "Designed for Australian healthcare workflows"],
+            negatives: ["Requires review and sign-off — not fully autonomous", "Audio capture raises patient consent considerations", "Accuracy varies in complex specialist consultations"],
+            price: ["Free (limited sessions)", "Professional — $99/mo", "Clinic — contact for pricing"] },
+          { name: "Cliniko", url: "https://www.cliniko.com", icon: "https://www.google.com/s2/favicons?domain=cliniko.com&sz=64",
+            description: "Practice management software for allied health providers covering appointment booking, clinical notes, invoicing, and patient communications.",
+            positives: ["Purpose-built for allied health in Australia and NZ", "Strong online booking and patient portal", "Simple, clean interface with fast onboarding"],
+            negatives: ["Limited telehealth integration vs. specialist platforms", "No built-in payroll or HR features", "Advanced reporting requires workarounds"],
+            price: ["From $45/mo (1 practitioner) up to $374/mo (unlimited)"] },
+          { name: "Splose", url: "https://www.splose.com", icon: "https://www.google.com/s2/favicons?domain=splose.com&sz=64",
+            description: "NDIS-focused practice management platform covering scheduling, claiming, clinical notes, and participant management for allied health and support providers.",
+            positives: ["Deep NDIS claiming integration with the NDIA portal", "Excellent for multi-location and multi-disciplinary teams", "Automated plan management and bulk billing"],
+            negatives: ["Primarily NDIS-focused — less suited to fee-for-service only practices", "Setup requires time to configure NDIS service catalogues", "Mobile app still maturing"],
+            price: ["From $119/mo — scales by practitioner count"] },
+          { name: "HotDoc", url: "https://www.hotdoc.com.au", icon: "https://www.google.com/s2/favicons?domain=hotdoc.com.au&sz=64",
+            description: "Patient engagement platform for GP and specialist clinics covering online bookings, recalls, reminders, and telehealth — dominant in Australian primary care.",
+            positives: ["Market-leading patient booking platform in Australia", "Automated recalls and appointment reminders reduce DNAs", "Integrates with major Australian PMS systems"],
+            negatives: ["Primarily a booking and engagement tool, not a full PMS", "Pricing per-practitioner adds up for large clinics", "Limited use outside the Australian market"],
+            price: ["Contact HotDoc for practice-specific pricing"] },
+          { name: "MediRecords", url: "https://www.medirecords.com", icon: "https://www.google.com/s2/favicons?domain=medirecords.com&sz=64",
+            description: "Cloud-based clinical records and practice management system for Australian GPs, specialists, and allied health providers, integrated with Medicare and My Health Record.",
+            positives: ["Full cloud deployment — no on-premise infrastructure", "Strong Medicare/DVA billing integration", "My Health Record compliant"],
+            negatives: ["Smaller user base than Best Practice or Medical Director", "Some specialist workflows require customisation", "Transition cost from legacy PMS systems can be high"],
+            price: ["Contact MediRecords for practice pricing"] },
+        ]
+      },
+      hospitality: {
+        label: "Hospitality, Tourism & Events",
+        tools: [
+          { name: "SevenRooms", url: "https://www.sevenrooms.com", icon: "https://www.google.com/s2/favicons?domain=sevenrooms.com&sz=64",
+            description: "Guest experience and reservations platform for restaurants, bars, and hotels — covering bookings, waitlists, guest profiles, and marketing automation.",
+            positives: ["Rich guest profile and CRM capabilities", "Powerful marketing automation (email/SMS post-visit)", "Strong integrations with major POS and PMS systems"],
+            negatives: ["Premium pricing suits larger venues", "Setup and configuration is involved", "Marketing tools require operator investment to be effective"],
+            price: ["Contact SevenRooms for venue pricing"] },
+          { name: "Lightspeed Restaurant", url: "https://www.lightspeedhq.com/au/pos/restaurant", icon: "https://www.google.com/s2/favicons?domain=lightspeedhq.com&sz=64",
+            description: "Cloud-based POS and operations platform for restaurants, cafés, and bars with table management, kitchen display, menu management, and reporting.",
+            positives: ["Strong table and floor plan management", "Excellent real-time reporting and sales analytics", "Integrates with delivery platforms and accounting tools"],
+            negatives: ["Hardware costs on top of subscription", "Some users report reliability concerns in high-volume service", "Advanced features require higher tiers"],
+            price: ["Essentials — $189/mo", "Premium — $399/mo", "Enterprise — contact for pricing"] },
+          { name: "Deputy", url: "https://www.deputy.com", icon: "https://www.google.com/s2/favicons?domain=deputy.com&sz=64",
+            description: "Workforce management platform for shift-based businesses covering employee scheduling, time tracking, award interpretation, and payroll integration.",
+            positives: ["Award interpretation is a standout feature for Australian operators", "Easy drag-and-drop scheduling with compliance warnings", "Seamless integration with Xero, MYOB, and major payroll tools"],
+            negatives: ["Pricing adds up for large casual workforces", "Mobile app can lag on older devices", "Reporting depth less than enterprise-grade WFM tools"],
+            price: ["Scheduling — $4.50/user/mo", "Time & Attendance — $4.50/user/mo", "Premium — $6/user/mo", "Enterprise — contact for pricing"] },
+          { name: "Rezdy", url: "https://www.rezdy.com", icon: "https://www.google.com/s2/favicons?domain=rezdy.com&sz=64",
+            description: "Online booking and distribution software for tour operators, activity providers, and attraction venues — connecting with OTAs like Viator, GetYourGuide, and Expedia.",
+            positives: ["Largest OTA distribution network for tours and activities", "Real-time availability across all channels", "Strong for multi-location and multi-product operators"],
+            negatives: ["Channel manager fees can impact margin", "UI has a dated feel compared to newer entrants", "Customer support response times can be slow"],
+            price: ["Foundation — $49/mo", "Growth — $99/mo", "Accelerate — $249/mo"] },
+          { name: "OpenTable", url: "https://www.opentable.com.au", icon: "https://www.google.com/s2/favicons?domain=opentable.com.au&sz=64",
+            description: "Restaurant reservation and guest management platform with a large diner network, reputation management, and front-of-house tools for hospitality operators.",
+            positives: ["Access to large diner discovery network", "Simple reservation and floor management", "Guest reviews and reputation tools included"],
+            negatives: ["Cover fees can add up for high-volume restaurants", "Less CRM depth than SevenRooms", "US-centric platform — some AU features lag"],
+            price: ["Basic — $39/mo + cover fees", "Core — $249/mo + cover fees", "Pro — $449/mo + cover fees"] },
+        ]
+      },
+      manufacturing: {
+        label: "Manufacturing, Fabrication & Workshops",
+        tools: [
+          { name: "Katana MRP", url: "https://www.katanamrp.com", icon: "https://www.google.com/s2/favicons?domain=katanamrp.com&sz=64",
+            description: "Cloud manufacturing resource planning software for small to mid-size manufacturers covering production planning, inventory, shop floor control, and sales order management.",
+            positives: ["Intuitive UI — easy for non-ERP-experienced teams", "Real-time inventory and production scheduling", "Strong Shopify, Xero, and QuickBooks integrations"],
+            negatives: ["Less suited to complex multi-level BOMs at scale", "Reporting is more limited than full ERP systems", "Some customisation limitations"],
+            price: ["Essential — $199/mo", "Advanced — $399/mo", "Professional — $899/mo"] },
+          { name: "Cin7 Omni", url: "https://www.cin7.com", icon: "https://www.google.com/s2/favicons?domain=cin7.com&sz=64",
+            description: "Connected inventory and order management platform for product businesses combining manufacturing, wholesale, and retail channels in one system.",
+            positives: ["Powerful multi-channel inventory management", "Strong wholesale B2B portal and EDI capabilities", "Wide integration ecosystem (500+ connections)"],
+            negatives: ["Steep learning curve for new users", "Support quality inconsistent during onboarding", "Cost increases with modules and integrations"],
+            price: ["Standard — $349/mo", "Pro — $599/mo", "Advanced — $999/mo"] },
+          { name: "Fishbowl Manufacturing", url: "https://www.fishbowlinventory.com", icon: "https://www.google.com/s2/favicons?domain=fishbowlinventory.com&sz=64",
+            description: "Manufacturing and inventory management software tightly integrated with QuickBooks for small manufacturers needing BOMs, work orders, and lot tracking.",
+            positives: ["Excellent QuickBooks integration for financial sync", "Comprehensive BOM, work order, and job costing", "One-time licence option available"],
+            negatives: ["UI feels dated compared to modern cloud platforms", "Limited cloud capabilities vs. Katana or Cin7", "Best with QuickBooks — less value standalone"],
+            price: ["Warehouse — from $329/mo", "Manufacturing — from $329/mo", "One-time licence — contact for pricing"] },
+          { name: "Prodsmart", url: "https://www.prodsmart.com", icon: "https://www.google.com/s2/favicons?domain=prodsmart.com&sz=64",
+            description: "Shop floor data capture and production monitoring platform that digitises manufacturing operations and provides real-time OEE and performance dashboards.",
+            positives: ["Real-time shop floor visibility across all workstations", "OEE tracking and quality management built in", "Works on tablets — low barrier for operators"],
+            negatives: ["Best as a complement to, not a replacement for, full ERP", "Initial setup requires mapping all production processes", "Reporting customisation can be limited"],
+            price: ["Contact Prodsmart for pricing"] },
+          { name: "JobBOSS²", url: "https://www.jobboss.com", icon: "https://www.google.com/s2/favicons?domain=jobboss.com&sz=64",
+            description: "ERP software purpose-built for discrete job shop and make-to-order manufacturers covering quoting, scheduling, job costing, and quality management.",
+            positives: ["Purpose-built for job shop and custom manufacturing", "Strong quoting-to-invoice workflow", "Long-standing product with deep manufacturing functionality"],
+            negatives: ["Legacy UI requires modernisation investment", "Implementation and training can be lengthy", "Less suited to process or food manufacturing"],
+            price: ["Contact JobBOSS² for pricing"] },
+        ]
+      },
+      nonprofits: {
+        label: "Non-profits, Associations & Community Organisations",
+        tools: [
+          { name: "Salesforce NPSP", url: "https://www.salesforce.org/nonprofit", icon: "https://www.google.com/s2/favicons?domain=salesforce.org&sz=64",
+            description: "Nonprofit Success Pack on Salesforce CRM provides donor management, grant tracking, programme management, and fundraising analytics for mid-to-large nonprofits.",
+            positives: ["Highly customisable for complex nonprofit operations", "Strong grant and programme management", "Vast integration options via Salesforce ecosystem"],
+            negatives: ["Significant implementation and admin overhead", "Requires dedicated Salesforce admin or partner", "Cost and complexity can overwhelm small organisations"],
+            price: ["Power of Us — 10 free licences for eligible nonprofits", "Additional licences from $36/user/mo"] },
+          { name: "Blackbaud Raiser's Edge NXT", url: "https://www.blackbaud.com/products/blackbaud-raisers-edge-nxt", icon: "https://www.google.com/s2/favicons?domain=blackbaud.com&sz=64",
+            description: "Donor management and fundraising CRM trusted by large nonprofits and educational institutions for relationship management, campaigns, and major gift tracking.",
+            positives: ["Industry-leading donor management functionality", "Strong major gifts and planned giving tracking", "Deep reporting and prospect research tools"],
+            negatives: ["High cost — suited to larger organisations", "User interface not as modern as newer entrants", "Implementation and support can be costly"],
+            price: ["Contact Blackbaud — typically $10,000+/yr"] },
+          { name: "Donorbox", url: "https://www.donorbox.org", icon: "https://www.google.com/s2/favicons?domain=donorbox.org&sz=64",
+            description: "Online donation platform enabling nonprofits to create embeddable donation forms, manage recurring donors, run fundraising campaigns, and accept multiple payment methods.",
+            positives: ["Quick to set up — embeds in any website", "Supports recurring giving and peer-to-peer fundraising", "Low platform fee structure"],
+            negatives: ["Not a full donor CRM — integrations needed for relationship management", "Some advanced features require premium plan", "Platform fee on donations"],
+            price: ["Starter — free (1.5% platform fee)", "Pro — $139/mo (no platform fee)", "Premium — $299/mo"] },
+          { name: "Bloomerang", url: "https://www.bloomerang.com", icon: "https://www.google.com/s2/favicons?domain=bloomerang.com&sz=64",
+            description: "Donor management CRM focused on donor retention, with engagement scoring, email marketing, and reporting tools built specifically for small to mid-size nonprofits.",
+            positives: ["Donor retention focus and engagement scoring unique to the market", "Easy to use without technical expertise", "Built-in email marketing and online giving forms"],
+            negatives: ["Less powerful than Salesforce NPSP for complex programmes", "Limited grant management functionality", "Scaling costs can be significant"],
+            price: ["From $125/mo — scales by number of records"] },
+          { name: "Mailchimp", url: "https://www.mailchimp.com", icon: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64",
+            description: "Email marketing platform widely used by nonprofits for newsletters, campaign communications, donor updates, and event promotions — with AI content tools.",
+            positives: ["Free tier generous for small contact lists", "AI subject line and content suggestions", "Easy automation workflows for donor communications"],
+            negatives: ["Not a donor CRM — requires integration for full fundraising workflow", "Pricing jumps significantly above 500 contacts", "Deliverability issues occasionally reported"],
+            price: ["Free (500 contacts)", "Essentials — $13/mo", "Standard — $20/mo", "Premium — $350/mo"] },
+        ]
+      },
+      creators: {
+        label: "Online Creators, Coaches & Info Businesses",
+        tools: [
+          { name: "Kajabi", url: "https://www.kajabi.com", icon: "https://www.google.com/s2/favicons?domain=kajabi.com&sz=64",
+            description: "All-in-one platform for creators and coaches to host courses, communities, coaching programmes, podcasts, and email marketing — with AI tools for content creation.",
+            positives: ["Replaces multiple tools (course + email + community + website)", "Strong coaching and cohort programme features", "Kajabi AI speeds up content and landing page creation"],
+            negatives: ["Expensive compared to assembling individual tools", "Transaction fees on lower plans", "Less flexible for highly custom experiences"],
+            price: ["Kickstarter — $69/mo", "Basic — $149/mo", "Growth — $199/mo", "Pro — $399/mo"] },
+          { name: "Kit (ConvertKit)", url: "https://www.kit.com", icon: "https://www.google.com/s2/favicons?domain=kit.com&sz=64",
+            description: "Email marketing and automation platform designed for creators, with subscriber tagging, visual automation builder, and built-in commerce for selling digital products.",
+            positives: ["Creator-focused — excellent for newsletter and product businesses", "Simple visual automation builder", "Commerce tools let you sell products without a separate platform"],
+            negatives: ["Email template design is more limited than Klaviyo or Mailchimp", "Reporting could be more detailed", "Not ideal for B2B or transactional email"],
+            price: ["Free (up to 10,000 subscribers)", "Creator — $29/mo", "Creator Pro — $59/mo"] },
           { name: "Descript", url: "https://www.descript.com", icon: "https://www.google.com/s2/favicons?domain=descript.com&sz=64",
-            description: "All-in-one video and podcast editor where you edit media by editing its text transcript, with AI voice cloning and overdub.",
-            positives: ["Edit video by editing text — huge time saver", "Excellent AI transcription accuracy", "Overdub for seamless voice corrections"],
-            negatives: ["Not suited for complex multi-track production", "AI voice cloning needs good sample audio", "Export options more limited than Premiere"],
-            price: ["Free (1hr transcription/mo)", "Hobbyist — $24/mo", "Creator — $40/mo", "Business — $80/mo"] },
-          { name: "ElevenLabs", url: "https://elevenlabs.io", icon: "https://www.google.com/s2/favicons?domain=elevenlabs.io&sz=64",
-            description: "AI voice synthesis producing the most realistic text-to-speech and voice cloning available, supporting 30+ languages.",
-            positives: ["Industry-leading voice naturalness", "Voice cloning from short samples", "Wide language and accent support"],
-            negatives: ["Higher tiers needed for commercial use", "Cloned voices raise ethical concerns if misused", "Real-time latency can be inconsistent"],
-            price: ["Free (10k chars/mo)", "Starter — $5/mo", "Creator — $22/mo", "Pro — $99/mo"] },
-          { name: "Runway ML", url: "https://runwayml.com", icon: "https://www.google.com/s2/favicons?domain=runwayml.com&sz=64",
-            description: "Generative AI video platform enabling text-to-video, image-to-video, and advanced AI-powered video editing tools.",
-            positives: ["Leading text-to-video generation quality", "Comprehensive suite of creative AI tools", "Regular model updates pushing quality forward"],
-            negatives: ["Video generation is credit-hungry and costly", "Output length limited on lower tiers", "Can struggle with complex motion consistency"],
-            price: ["Free (125 credits)", "Standard — $15/mo", "Pro — $35/mo", "Unlimited — $95/mo"] },
-          { name: "Otter.ai", url: "https://otter.ai", icon: "https://www.google.com/s2/favicons?domain=otter.ai&sz=64",
-            description: "AI meeting assistant that joins calls to transcribe, summarise, and extract action items in real time.",
-            positives: ["Joins Zoom/Meet/Teams automatically", "Real-time transcription with speaker labels", "Auto-generated summaries and action items"],
-            negatives: ["Accuracy drops with heavy accents or jargon", "Privacy concerns around AI joining calls", "Free tier has limited monthly minutes"],
-            price: ["Free (300 mins/mo)", "Pro — $16.99/user/mo", "Business — $30/user/mo", "Enterprise — custom"] },
+            description: "AI-powered video and podcast editing platform where you edit media by editing the transcript — with voice cloning, eye contact correction, and auto-captions.",
+            positives: ["Transcript-based editing is a game changer for non-editors", "Filler word removal and overdub save significant production time", "Screen recording and publishing tools included"],
+            negatives: ["AI voice cloning quality still improving", "Heavy files can slow down the browser editor", "Less powerful than Premiere for advanced video production"],
+            price: ["Free (limited transcription)", "Creator — $24/mo", "Pro — $40/mo", "Enterprise — contact for pricing"] },
           { name: "Notion AI", url: "https://www.notion.so/product/ai", icon: "https://www.google.com/s2/favicons?domain=notion.so&sz=64",
-            description: "AI writing and knowledge assistant built into Notion for drafting, summarising, translating, and querying your workspace.",
-            positives: ["Deeply integrated into Notion's workflow", "Queries and summarises across your entire workspace", "Handles drafting, editing, and translation well"],
-            negatives: ["Only useful if your team already uses Notion", "Not as powerful as standalone AI writing tools", "Add-on cost on top of Notion subscription"],
-            price: ["Notion AI add-on — $10/user/mo"] },
-        ]
-      },
-      cx: {
-        label: "Customer Support",
-        tools: [
-          { name: "Intercom Fin", url: "https://www.intercom.com/fin", icon: "https://www.google.com/s2/favicons?domain=intercom.com&sz=64",
-            description: "GPT-4 powered AI agent built on your support content that resolves customer queries autonomously with seamless human handoff.",
-            positives: ["High resolution rate out of the box", "Smooth handoff to human agents", "Uses existing help content as knowledge base"],
-            negatives: ["Resolution-based pricing expensive at scale", "Needs well-structured support content", "Limited AI personality customisation on lower tiers"],
-            price: ["Fin AI Agent — $0.99/resolution", "Full Intercom plans from $74/mo"] },
-          { name: "Zendesk AI", url: "https://www.zendesk.com/ai", icon: "https://www.google.com/s2/favicons?domain=zendesk.com&sz=64",
-            description: "AI suite built into Zendesk offering intelligent triage, agent assist, automated responses, and sentiment analysis.",
-            positives: ["Native to Zendesk — zero integration needed", "AI triage reduces ticket routing time", "Agent Copilot suggests responses in real time"],
-            negatives: ["AI features require higher-tier Zendesk plans", "Can feel rigid without technical configuration", "Underlying Zendesk cost is significant"],
-            price: ["AI add-on from $50/agent/mo", "Suite plans from $55/agent/mo"] },
-          { name: "Freshdesk Freddy", url: "https://www.freshworks.com/freshdesk/freddy-ai", icon: "https://www.google.com/s2/favicons?domain=freshdesk.com&sz=64",
-            description: "Freddy AI is Freshdesk's built-in AI for automated ticket deflection, agent suggestions, and predictive insights.",
-            positives: ["Good value compared to Zendesk AI", "Freddy Self Service deflects common queries effectively", "Predictive CSAT flags at-risk tickets"],
-            negatives: ["Freddy AI lags behind Intercom Fin in quality", "Some features only on Enterprise plan", "Reporting depth not as strong as competitors"],
-            price: ["Growth — $15/agent/mo", "Pro — $49/agent/mo", "Enterprise — $79/agent/mo"] },
-          { name: "Tidio", url: "https://www.tidio.com", icon: "https://www.google.com/s2/favicons?domain=tidio.com&sz=64",
-            description: "Live chat and AI chatbot platform for SMBs combining automation with human support across web and social channels.",
-            positives: ["Easy to set up — live in minutes", "Affordable for small and medium businesses", "Covers web chat, email, and social in one inbox"],
-            negatives: ["AI chatbot less sophisticated than enterprise options", "Limited CRM integrations on lower plans", "Conversation limits on cheaper tiers"],
-            price: ["Free (50 conversations/mo)", "Starter — $29/mo", "Growth — $59/mo", "Tidio+ — from $749/mo"] },
-          { name: "Forethought", url: "https://forethought.ai", icon: "https://www.google.com/s2/favicons?domain=forethought.ai&sz=64",
-            description: "Enterprise AI platform for support with triage, automated resolution, and agent assist powered by generative AI.",
-            positives: ["Strong enterprise-grade triage and routing", "Generative AI handles complex query resolution", "Integrates with Salesforce, Zendesk, ServiceNow"],
-            negatives: ["Enterprise pricing — not suited for SMBs", "Implementation requires dedicated onboarding", "Fewer community resources than larger brands"],
-            price: ["Custom pricing — contact sales"] },
-        ]
-      },
-      design: {
-        label: "Digital Design",
-        tools: [
-          { name: "Midjourney", url: "https://www.midjourney.com", icon: "https://www.google.com/s2/favicons?domain=midjourney.com&sz=64",
-            description: "Leading AI image generation tool known for exceptional aesthetic quality, used extensively by designers and creatives worldwide.",
-            positives: ["Best-in-class image aesthetic quality", "Active community with extensive prompt resources", "Consistent style and high detail output"],
-            negatives: ["Discord-only interface (web app limited)", "No free tier", "Less precise control vs Stable Diffusion"],
-            price: ["Basic — $10/mo", "Standard — $30/mo", "Pro — $60/mo", "Mega — $120/mo"] },
-          { name: "Adobe Firefly", url: "https://www.adobe.com/products/firefly.html", icon: "https://www.google.com/s2/favicons?domain=adobe.com&sz=64",
-            description: "Adobe's generative AI suite integrated across Creative Cloud, trained on licensed content for commercially safe outputs.",
-            positives: ["Commercially safe — trained on licensed Adobe Stock", "Deeply integrated into Photoshop, Illustrator, Premiere", "Generative Fill and Expand are industry-leading"],
-            negatives: ["Generative credit system limits heavy use", "Requires Creative Cloud subscription", "Image style less creative than Midjourney"],
-            price: ["Included in Creative Cloud from $54.99/mo", "Firefly standalone from $9.99/mo (100 credits)"] },
-          { name: "DALL·E 3", url: "https://openai.com/dall-e-3", icon: "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
-            description: "OpenAI's image generation model with superior prompt adherence, integrated directly into ChatGPT for conversational image creation.",
-            positives: ["Exceptional prompt-following accuracy", "Text rendering in images far superior to rivals", "Accessible via ChatGPT with no extra setup"],
-            negatives: ["Lower photographic realism than Midjourney", "Limited fine-grained style control", "Generation speed can be slow"],
-            price: ["Via ChatGPT Plus — $20/mo", "API: $0.040–$0.080 per image"] },
-          { name: "Figma AI", url: "https://www.figma.com/ai", icon: "https://www.google.com/s2/favicons?domain=figma.com&sz=64",
-            description: "AI features embedded in Figma for auto-layout suggestions, copy generation, design asset search, and prototyping assistance.",
-            positives: ["Integrated into your existing Figma workflow", "Auto-rename layers and generate copy in context", "Speeds up repetitive design tasks significantly"],
-            negatives: ["AI features still maturing vs standalone tools", "Requires Figma subscription", "Not a generative image tool"],
-            price: ["Starter — Free", "Professional — $12/editor/mo", "Organisation — $45/editor/mo"] },
+            description: "AI workspace layer built into Notion that helps creators draft, summarise, translate, and brainstorm content directly within their notes, databases, and wikis.",
+            positives: ["AI lives inside your existing Notion workspace", "Excellent for outlining courses, scripts, and frameworks", "Handles summarisation and Q&A across your knowledge base"],
+            negatives: ["Requires Notion as your workspace — not standalone", "AI quality varies for niche or technical content", "Token limits can interrupt long-form generation"],
+            price: ["Notion Free + AI add-on — $10/member/mo", "Notion Plus — $10/mo + AI add-on", "Business — $15/mo/member + AI add-on"] },
           { name: "Canva AI", url: "https://www.canva.com/ai-image-generator", icon: "https://www.google.com/s2/favicons?domain=canva.com&sz=64",
-            description: "AI tools within Canva including Magic Design, text-to-image, background remover, and AI presentation generation for non-designers.",
-            positives: ["Extremely accessible for non-designers", "Magic Design creates full decks/posts in seconds", "Generous free tier with AI features included"],
-            negatives: ["Output quality lower than specialised AI tools", "Less suited for professional brand-critical design", "AI image generation limited to simpler outputs"],
-            price: ["Free (limited AI features)", "Pro — $15/mo", "Teams — $10/user/mo (min 3 users)"] },
+            description: "AI-powered design tools inside Canva including Magic Write, Dream Lab image generation, Background Remover, and Magic Resize for fast content creation.",
+            positives: ["No design skills needed — AI handles layout, copy, and visuals", "Magic Resize instantly repurposes content across formats", "Deeply integrated into existing Canva workflow"],
+            negatives: ["AI image quality behind Midjourney for detailed art", "Generative credits can run out on lower tiers", "Brand consistency requires careful template management"],
+            price: ["Free (limited AI credits)", "Pro — $17/mo", "Teams — $30/mo (first 5)"] },
         ]
       },
-      finance: {
-        label: "Finance & Accounting",
+      personal: {
+        label: "Personal, Fitness & Lifestyle Services",
         tools: [
-          { name: "Vic.ai", url: "https://www.vic.ai", icon: "https://www.google.com/s2/favicons?domain=vic.ai&sz=64",
-            description: "Autonomous AI accounting platform that automates invoice processing, coding, and approval workflows with near-human accuracy.",
-            positives: ["90%+ automation rate on invoice processing", "Learns and improves from your accounting data", "Integrates with major ERPs like SAP and Oracle"],
-            negatives: ["Premium pricing — better suited to mid-market+", "Implementation takes time for initial training", "Less effective for highly varied invoice types"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Domo AI", url: "https://www.domo.com/ai", icon: "https://www.google.com/s2/favicons?domain=domo.com&sz=64",
-            description: "Business intelligence platform with AI-driven insights, natural language querying, and automated anomaly detection across financial data.",
-            positives: ["Natural language data querying for non-technical users", "Real-time financial dashboards and alerts", "1000+ data connectors"],
-            negatives: ["Expensive — pricing not transparent", "Steeper learning curve for advanced dashboards", "Overkill for small finance teams"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Sage Copilot", url: "https://www.sage.com", icon: "https://www.google.com/s2/favicons?domain=sage.com&sz=64",
-            description: "AI assistant embedded in Sage products that automates bookkeeping tasks, surfaces cash flow insights, and answers finance queries.",
-            positives: ["Embedded in Sage — no extra integration", "Cash flow forecasting and anomaly alerts", "Accessible for SMB finance teams"],
-            negatives: ["Only available to Sage product users", "Feature depth varies across Sage product lines", "AI features still rolling out across the suite"],
-            price: ["Included in Sage Intacct and Sage 50 plans", "SMB plans from ~$10/mo, enterprise custom"] },
-          { name: "Planful", url: "https://planful.com", icon: "https://www.google.com/s2/favicons?domain=planful.com&sz=64",
-            description: "Financial performance management platform with AI-assisted planning, forecasting, consolidation, and reporting for finance teams.",
-            positives: ["Purpose-built for FP&A — not a bolt-on AI", "Strong scenario modelling and driver-based planning", "Integrates with ERPs, CRMs, and data warehouses"],
-            negatives: ["Mid-market and enterprise pricing", "Initial implementation can be complex", "Requires finance expertise to get full value"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Cube", url: "https://www.cubesoftware.com", icon: "https://www.google.com/s2/favicons?domain=cubesoftware.com&sz=64",
-            description: "FP&A platform that connects spreadsheets to a central financial data hub with AI-assisted analysis and automated reporting.",
-            positives: ["Works with existing Excel/Google Sheets workflows", "Fast implementation vs heavy FP&A tools", "Centralises financial data without replacing familiar tools"],
-            negatives: ["Less powerful than Planful for complex modelling", "Better suited to SMB/mid-market than enterprise", "Reporting customisation has limits"],
-            price: ["Starter — from $1,500/mo", "Enterprise — custom"] },
+          { name: "Mindbody", url: "https://www.mindbodyonline.com", icon: "https://www.google.com/s2/favicons?domain=mindbodyonline.com&sz=64",
+            description: "Business management platform for fitness studios, gyms, salons, and wellness providers covering scheduling, memberships, payments, and client marketing.",
+            positives: ["Industry-leading marketplace discovery for new clients", "Comprehensive membership and class pack management", "Strong marketing automation and app integrations"],
+            negatives: ["Expensive for solo operators and small studios", "Customer support quality varies", "UI can feel complex for new users"],
+            price: ["Starter — $139/mo", "Accelerate — $279/mo", "Ultimate — $499/mo", "Ultimate Plus — $699/mo"] },
+          { name: "Vagaro", url: "https://www.vagaro.com", icon: "https://www.google.com/s2/favicons?domain=vagaro.com&sz=64",
+            description: "Salon, spa, and fitness business management software with online booking, POS, email and SMS marketing, payroll, and a marketplace for client discovery.",
+            positives: ["Competitive pricing with strong feature set", "Marketplace listing drives new client bookings", "Built-in payroll and employee management"],
+            negatives: ["Some advanced features (e.g. forms) cost extra", "UI looks a bit dated", "App can be slow during peak periods"],
+            price: ["From $30/mo (1 staff) to $90/mo (unlimited staff)"] },
+          { name: "Phorest", url: "https://www.phorest.com", icon: "https://www.google.com/s2/favicons?domain=phorest.com&sz=64",
+            description: "Salon and spa management software focused on client retention, with rebooking tools, loyalty programmes, targeted marketing, and staff performance dashboards.",
+            positives: ["Outstanding client retention and rebooking tools", "SMS and email marketing with AI personalisation", "Staff performance and commission management"],
+            negatives: ["Pricing not public — requires sales contact", "Stronger in UK and EU market than Australia", "Some features require higher tier plans"],
+            price: ["Contact Phorest for pricing"] },
+          { name: "GymMaster", url: "https://www.gymmaster.com", icon: "https://www.google.com/s2/favicons?domain=gymmaster.com&sz=64",
+            description: "Gym and fitness club management software covering memberships, door access control, class scheduling, billing, and member self-service from a New Zealand-based provider.",
+            positives: ["Door access control integration is a standout feature", "Strong 24/7 gym operation support", "Good value for independent gyms vs. Mindbody"],
+            negatives: ["Less polished UI than premium competitors", "Smaller integration ecosystem", "Marketing automation tools are more limited"],
+            price: ["Starter — $95/mo", "Professional — $145/mo", "Business — $195/mo"] },
+          { name: "Acuity Scheduling", url: "https://www.acuityscheduling.com", icon: "https://www.google.com/s2/favicons?domain=acuityscheduling.com&sz=64",
+            description: "Online appointment scheduling platform for health, fitness, and lifestyle practitioners with intake forms, payment collection, and automated reminders.",
+            positives: ["Clean, professional booking experience for clients", "Powerful intake forms and custom questions", "Easy payment and package collection at booking"],
+            negatives: ["No marketplace or client discovery features", "Less powerful than Mindbody for class-based businesses", "Squarespace acquisition has slowed feature development"],
+            price: ["Emerging — $16/mo", "Growing — $27/mo", "Powerhouse — $49/mo"] },
         ]
       },
-      health: {
-        label: "Healthcare",
+      professional: {
+        label: "Professional, Financial & Legal Services",
         tools: [
-          { name: "Nabla Copilot", url: "https://www.nabla.com", icon: "https://www.google.com/s2/favicons?domain=nabla.com&sz=64",
-            description: "AI ambient scribe that listens to patient consultations and automatically generates structured clinical notes in the EHR.",
-            positives: ["Saves clinicians 2+ hours of documentation daily", "Works with most EHR systems", "HIPAA compliant and SOC 2 certified"],
-            negatives: ["Requires good audio capture in clinical settings", "Needs clinician review before finalising notes", "Not yet available in all languages/specialties"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Nuance DAX", url: "https://www.nuance.com/healthcare/ambient-clinical-intelligence.html", icon: "https://www.google.com/s2/favicons?domain=nuance.com&sz=64",
-            description: "Microsoft's ambient clinical intelligence solution automating medical documentation across specialties within Epic and other EHRs.",
-            positives: ["Deep EHR integration, especially Epic", "Trusted by major health systems globally", "Reduces burnout by eliminating post-visit note writing"],
-            negatives: ["Enterprise pricing — not accessible for small practices", "Rollout requires significant IT support", "Microsoft ecosystem dependency"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Suki AI", url: "https://www.suki.ai", icon: "https://www.google.com/s2/favicons?domain=suki.ai&sz=64",
-            description: "AI voice assistant for clinicians handling note dictation, code suggestions, and clinical Q&A during patient care.",
-            positives: ["Voice-first interface fits clinical workflow", "ICD-10 and CPT code suggestions improve billing accuracy", "Works across 50+ EHR platforms"],
-            negatives: ["Voice accuracy varies in noisy environments", "Smaller install base than Nuance", "Some specialty terminology needs training"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Glass Health", url: "https://glass.health", icon: "https://www.google.com/s2/favicons?domain=glass.health&sz=64",
-            description: "AI clinical decision support tool that generates differential diagnoses and clinical plans from patient summaries for physicians.",
-            positives: ["Rapidly generates evidence-based differentials", "Useful for complex or unfamiliar presentations", "Clean, intuitive interface for busy clinicians"],
-            negatives: ["AI output must always be verified by clinician", "Limited EHR integration currently", "Primarily for diagnostics — not a full workflow tool"],
-            price: ["Free beta access currently available"] },
-          { name: "Abridge", url: "https://www.abridge.com", icon: "https://www.google.com/s2/favicons?domain=abridge.com&sz=64",
-            description: "AI medical conversation platform that records and summarises patient-clinician conversations into structured clinical notes within Epic.",
-            positives: ["Native Epic integration — widely deployed", "Produces high-quality structured SOAP notes", "Patients can receive their own visit summaries"],
-            negatives: ["Currently limited to Epic environments", "Requires reliable audio capture", "Enterprise contract required"],
-            price: ["Custom pricing — contact sales"] },
+          { name: "Xero", url: "https://www.xero.com", icon: "https://www.google.com/s2/favicons?domain=xero.com&sz=64",
+            description: "Cloud accounting platform used by accountants, bookkeepers, and financial advisers for client accounts, bank reconciliation, BAS lodgement, and financial reporting.",
+            positives: ["Market-leading cloud accounting in Australia and NZ", "Strong advisor partner programme and practice tools", "Huge integration ecosystem for add-on apps"],
+            negatives: ["Pricing has increased significantly in recent years", "Payroll can lag for complex enterprise needs", "Reporting customisation requires add-ons like Fathom"],
+            price: ["Starter — $35/mo", "Standard — $70/mo", "Premium — $110/mo"] },
+          { name: "Karbon", url: "https://www.karbonhq.com", icon: "https://www.google.com/s2/favicons?domain=karbonhq.com&sz=64",
+            description: "Accounting practice management platform that centralises client work, team communication, and workflow automation — built specifically for accounting firms.",
+            positives: ["Eliminates email chaos with shared client inbox", "Powerful workflow automation for compliance work", "Deep Xero integration for practice productivity"],
+            negatives: ["Significant investment to onboard a whole firm", "Pricing per seat adds up for larger teams", "Some users find the initial setup complex"],
+            price: ["Team — $59/user/mo", "Business — $89/user/mo", "Enterprise — contact for pricing"] },
+          { name: "LEAP Legal Software", url: "https://www.leap.com.au", icon: "https://www.google.com/s2/favicons?domain=leap.com.au&sz=64",
+            description: "Legal practice management and accounting software for small to mid-size law firms in Australia, covering matter management, time recording, billing, and document assembly.",
+            positives: ["Purpose-built for Australian law firms and compliance requirements", "Integrated trust accounting and matter management", "Document automation reduces drafting time significantly"],
+            negatives: ["Tied to Microsoft ecosystem (Outlook/Word integration)", "Pricing is on the higher side for small firms", "Mobile app functionality is more limited"],
+            price: ["Contact LEAP for firm-specific pricing"] },
+          { name: "Ignition", url: "https://www.ignitionapp.com", icon: "https://www.google.com/s2/favicons?domain=ignitionapp.com&sz=64",
+            description: "Client engagement and billing automation platform for professional services firms — covering proposals, engagement letters, automated invoicing, and payment collection.",
+            positives: ["Automates engagement letter, proposal, and payment in one flow", "Eliminates accounts receivable chase for recurring fees", "Xero/QuickBooks integration for seamless billing"],
+            negatives: ["Best for recurring-fee businesses — less suited to one-off project work", "Some users find proposal templates inflexible", "Pricing tier limits on active clients"],
+            price: ["Solo — $39/mo", "Pro — $119/mo", "Scale — $199/mo", "Grow — $349/mo"] },
+          { name: "Vxt", url: "https://www.vxt.co.nz", icon: "https://www.google.com/s2/favicons?domain=vxt.co.nz&sz=64",
+            description: "AI phone system for professional services firms with voicemail transcription, call recording, CRM logging, and integration with practice management tools.",
+            positives: ["AI voicemail transcription saves significant time", "Automatic call logging to Clio, Xero, and other tools", "Easy rollout compared to traditional PBX systems"],
+            negatives: ["Primarily suited to small professional service firms", "Call quality dependent on internet connection", "Integration depth varies by CRM/PMS platform"],
+            price: ["Free (limited features)", "Professional — $20/user/mo", "Business — $30/user/mo"] },
         ]
       },
-      hr: {
-        label: "HR & Recruitment",
+      realestate: {
+        label: "Real Estate & Property Management",
         tools: [
-          { name: "Greenhouse + AI", url: "https://www.greenhouse.io", icon: "https://www.google.com/s2/favicons?domain=greenhouse.io&sz=64",
-            description: "Leading ATS with AI-enhanced candidate sourcing, job description optimisation, and structured interview features for scalable hiring.",
-            positives: ["Best-in-class structured hiring workflows", "AI de-biasing tools improve fair evaluation", "Rich integration ecosystem (500+ tools)"],
-            negatives: ["Expensive for small companies", "AI features still maturing vs pure-play AI tools", "Implementation takes significant time"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "HireVue", url: "https://www.hirevue.com", icon: "https://www.google.com/s2/favicons?domain=hirevue.com&sz=64",
-            description: "Video interviewing and AI assessment platform that evaluates candidates via async video interviews and game-based assessments.",
-            positives: ["Scales screening across thousands of candidates", "Reduces time-to-interview dramatically", "Structured assessments improve consistency"],
-            negatives: ["AI facial analysis features have drawn bias concerns", "Candidates can find video-only process impersonal", "Assessment validity varies by role type"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Workday AI", url: "https://www.workday.com/en-gb/artificial-intelligence.html", icon: "https://www.google.com/s2/favicons?domain=workday.com&sz=64",
-            description: "AI capabilities embedded across Workday HCM for skills intelligence, workforce planning, and talent mobility recommendations.",
-            positives: ["Native to Workday — no integration overhead", "Skills Cloud maps and matches talent across the org", "Strong workforce planning and succession tools"],
-            negatives: ["Only valuable if already on Workday", "Significant Workday licence costs", "AI features require data maturity to be effective"],
-            price: ["Included in Workday HCM — custom pricing"] },
-          { name: "Paradox (Olivia)", url: "https://www.paradox.ai", icon: "https://www.google.com/s2/favicons?domain=paradox.ai&sz=64",
-            description: "Conversational AI recruiting assistant that automates candidate screening, interview scheduling, and onboarding via chat.",
-            positives: ["24/7 candidate engagement via chat and SMS", "Dramatically reduces time-to-schedule interviews", "High candidate satisfaction scores"],
-            negatives: ["Works best for high-volume repeatable hiring", "Less suited for complex or senior role recruitment", "Requires integration with existing ATS"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "Eightfold AI", url: "https://eightfold.ai", icon: "https://www.google.com/s2/favicons?domain=eightfold.ai&sz=64",
-            description: "Talent intelligence platform using deep learning to match candidates to roles based on potential and skills, not just keywords.",
-            positives: ["Skills-based matching reduces keyword bias", "Strong internal mobility and talent rediscovery features", "Covers full talent lifecycle from hiring to retention"],
-            negatives: ["Enterprise-only — high price point", "Complex implementation and data requirements", "Black-box AI can be hard to explain to hiring managers"],
-            price: ["Custom pricing — contact sales"] },
+          { name: "Rex Software", url: "https://www.rexsoftware.com", icon: "https://www.google.com/s2/favicons?domain=rexsoftware.com&sz=64",
+            description: "CRM and workflow platform for real estate sales agencies covering contact management, pipeline tracking, appraisals, listings, and vendor reporting.",
+            positives: ["Highly customisable CRM for active sales teams", "Strong mobile app for agents in the field", "Excellent vendor reporting and appraisal workflow"],
+            negatives: ["Property management is handled via separate Rex PM product", "Setup and customisation requires time investment", "Pricing adds up for larger teams"],
+            price: ["Contact Rex for agency pricing"] },
+          { name: "PropertyMe", url: "https://www.propertyme.com.au", icon: "https://www.google.com/s2/favicons?domain=propertyme.com.au&sz=64",
+            description: "Cloud property management platform for Australian agencies covering rental management, trust accounting, maintenance, inspections, and owner/tenant portals.",
+            positives: ["Leading property management platform in Australia", "Excellent trust accounting and compliance features", "Owner and tenant portals reduce routine communication"],
+            negatives: ["Sales agency tools are limited — needs Rex or similar for sales CRM", "Initial trust accounting setup requires care", "Some automation limitations for complex portfolios"],
+            price: ["From $89/mo — scales by portfolio size"] },
+          { name: "Campaigntrack", url: "https://www.campaigntrack.com.au", icon: "https://www.google.com/s2/favicons?domain=campaigntrack.com.au&sz=64",
+            description: "Real estate marketing automation platform for creating, ordering, and tracking property campaigns across print, digital, and social channels.",
+            positives: ["Streamlines listing campaign production across all media", "Integrates with major REA and CRM platforms", "Reduces manual ordering and production errors"],
+            negatives: ["Primarily a marketing workflow tool — not a full CRM", "Most valuable for agencies with high listing volumes", "Requires integration with existing agency tech stack"],
+            price: ["Contact Campaigntrack for agency pricing"] },
+          { name: "Console Cloud", url: "https://www.console.com.au/cloud", icon: "https://www.google.com/s2/favicons?domain=console.com.au&sz=64",
+            description: "Cloud property management and trust accounting solution for Australian real estate agencies managing residential and commercial rental portfolios.",
+            positives: ["Strong compliance and audit tools for trust accounting", "Maintenance and inspection management built in", "Australian-focused support team"],
+            negatives: ["UI is more functional than beautiful", "Implementation can take time for large portfolios migrating from legacy systems", "Some features lag competitors"],
+            price: ["Contact Console for pricing"] },
+          { name: "Agentbox", url: "https://www.agentbox.com.au", icon: "https://www.google.com/s2/favicons?domain=agentbox.com.au&sz=64",
+            description: "Real estate CRM with AI-powered matching that connects buyers to listings, automates follow-up campaigns, and provides pipeline visibility for sales agents.",
+            positives: ["AI buyer-listing matching surfaces warm leads automatically", "Strong integration with REA Group and Domain", "Automated follow-up campaigns save agent time"],
+            negatives: ["Smaller market share than Rex in premium agencies", "Some users report the interface needs modernisation", "Support quality can vary"],
+            price: ["Contact Agentbox for pricing"] },
         ]
       },
-      legal: {
-        label: "Legal",
+      retail: {
+        label: "Retail, E-commerce & Consumer Brands",
         tools: [
-          { name: "Harvey AI", url: "https://www.harvey.ai", icon: "https://www.google.com/s2/favicons?domain=harvey.ai&sz=64",
-            description: "Generative AI platform built for elite law firms, handling contract analysis, legal research, due diligence, and document drafting.",
-            positives: ["Purpose-built for complex legal workflows", "Handles large document sets with precision", "Used by top AmLaw 100 firms"],
-            negatives: ["Enterprise pricing — not accessible to small firms", "Requires legal expertise to validate outputs", "Primarily English-language focus"],
-            price: ["Custom pricing — contact sales"] },
-          { name: "CoCounsel", url: "https://legal.thomsonreuters.com/en/products/coCounsel", icon: "https://www.google.com/s2/favicons?domain=thomsonreuters.com&sz=64",
-            description: "Thomson Reuters' AI legal assistant for document review, contract analysis, deposition prep, and legal research within Westlaw.",
-            positives: ["Backed by Thomson Reuters' trusted legal data", "Westlaw integration provides authoritative sourcing", "Document review handles thousands of pages quickly"],
-            negatives: ["Requires Thomson Reuters subscription", "Premium pricing tier", "Best suited to litigation and corporate legal teams"],
-            price: ["Included in select Thomson Reuters plans — contact sales"] },
-          { name: "Spellbook", url: "https://www.spellbook.legal", icon: "https://www.google.com/s2/favicons?domain=spellbook.legal&sz=64",
-            description: "AI contract drafting and review tool embedded in Microsoft Word that suggests clauses, flags risk, and accelerates negotiation.",
-            positives: ["Lives inside Word — zero workflow change", "Fast contract redlining and clause suggestions", "Good value for small to mid-sized legal teams"],
-            negatives: ["Limited to contract work — not a full legal AI suite", "Output quality depends on input document quality", "Less powerful than Harvey for complex transactions"],
-            price: ["Starter — $69/user/mo", "Professional — $159/user/mo", "Enterprise — custom"] },
-          { name: "Lexis+ AI", url: "https://www.lexisnexis.com/en-us/products/lexis-plus-ai.page", icon: "https://www.google.com/s2/favicons?domain=lexisnexis.com&sz=64",
-            description: "LexisNexis' generative AI research assistant for legal research, drafting, and case strategy grounded in authoritative legal sources.",
-            positives: ["Grounded in Lexis's authoritative legal database", "Cited responses reduce hallucination risk", "Covers research, drafting, and contract analysis"],
-            negatives: ["Requires LexisNexis subscription", "Research depth can vary by jurisdiction", "Interface more traditional than newer AI tools"],
-            price: ["Included in Lexis+ plans — contact sales for AI pricing"] },
-          { name: "Ironclad AI", url: "https://ironcladapp.com", icon: "https://www.google.com/s2/favicons?domain=ironcladapp.com&sz=64",
-            description: "AI-powered contract lifecycle management for automating contract creation, negotiation, approval, and obligation tracking.",
-            positives: ["End-to-end CLM — not just review or drafting", "AI assists across the full contract workflow", "Strong workflow automation and approvals engine"],
-            negatives: ["Enterprise pricing", "Implementation is a significant project", "Best value requires replacing existing CLM tools"],
-            price: ["Custom pricing — contact sales"] },
+          { name: "Shopify", url: "https://www.shopify.com", icon: "https://www.google.com/s2/favicons?domain=shopify.com&sz=64",
+            description: "Leading ecommerce platform for building and scaling online stores, with AI product descriptions, built-in payments, inventory management, and a huge app ecosystem.",
+            positives: ["Best-in-class ecommerce platform with massive app ecosystem", "Shopify Magic AI for product copy and image generation", "Scales from single-product DTC to enterprise multi-channel"],
+            negatives: ["Transaction fees if not using Shopify Payments", "Theme customisation can be costly for bespoke designs", "Advanced B2B features require Plus tier"],
+            price: ["Basic — $39/mo", "Shopify — $105/mo", "Advanced — $399/mo", "Plus — from $2,300/mo"] },
+          { name: "Klaviyo", url: "https://www.klaviyo.com", icon: "https://www.google.com/s2/favicons?domain=klaviyo.com&sz=64",
+            description: "Email and SMS marketing platform built for ecommerce, with deep Shopify integration, predictive analytics, and AI-powered segmentation and send-time optimisation.",
+            positives: ["Best-in-class ecommerce email and SMS platform", "Predictive analytics for CLV and churn risk", "Pre-built flows for abandoned cart, post-purchase, and win-back"],
+            negatives: ["Pricing scales steeply with list size", "Can be complex to configure for non-marketers", "SMS pricing varies by country"],
+            price: ["Free (250 contacts)", "Email — from $45/mo", "Email + SMS — from $60/mo"] },
+          { name: "Gorgias", url: "https://www.gorgias.com", icon: "https://www.google.com/s2/favicons?domain=gorgias.com&sz=64",
+            description: "Customer support helpdesk built for ecommerce, integrating with Shopify to surface order data inside tickets and automate common support workflows.",
+            positives: ["Shopify order data visible inside every support ticket", "AI autoresponder handles up to 60% of routine queries", "Revenue tracking per support interaction"],
+            negatives: ["Best value for high-volume Shopify stores", "Pricing is per ticket — can be costly for chatty customers", "Integration depth varies outside Shopify"],
+            price: ["Starter — $10/mo (50 tickets)", "Basic — $60/mo (300 tickets)", "Pro — $360/mo (2,000 tickets)"] },
+          { name: "Triple Whale", url: "https://www.triplewhale.com", icon: "https://www.google.com/s2/favicons?domain=triplewhale.com&sz=64",
+            description: "Ecommerce analytics and attribution platform for DTC brands on Shopify — consolidating ad spend, revenue, and first-party data into a single dashboard.",
+            positives: ["Solves iOS14+ attribution gaps for paid social", "Blended ROAS and channel contribution dashboards", "Creative analytics helps optimise ad spend by asset"],
+            negatives: ["Primarily Shopify-focused — limited for other platforms", "Can be expensive for smaller ad spend volumes", "Setup requires connecting multiple ad platform APIs"],
+            price: ["Founder — $129/mo", "Essentials — $299/mo", "Growth — $499/mo", "Premium — contact for pricing"] },
+          { name: "Lightspeed Retail", url: "https://www.lightspeedhq.com/au/pos/retail", icon: "https://www.google.com/s2/favicons?domain=lightspeedhq.com&sz=64",
+            description: "Cloud-based retail POS and inventory management platform for physical stores and omnichannel retailers — with built-in supplier ordering and ecommerce integration.",
+            positives: ["Strong inventory management across multiple locations", "Built-in supplier catalogue and purchase orders", "Integrates with Shopify for unified online/offline stock"],
+            negatives: ["Hardware costs on top of subscription", "Advanced reporting on lower tiers is limited", "Customer support availability can be slow in APAC"],
+            price: ["Basic — $109/mo", "Core — $179/mo", "Plus — $289/mo"] },
         ]
       },
-      marketing: {
-        label: "Marketing",
-        tools: [
-          { name: "Jasper", url: "https://www.jasper.ai", icon: "https://www.google.com/s2/favicons?domain=jasper.ai&sz=64",
-            description: "AI content platform for marketing teams to create on-brand blog posts, ads, emails, and social content at scale.",
-            positives: ["Strong brand voice training keeps output on-brand", "Wide range of marketing content templates", "Team collaboration features built in"],
-            negatives: ["More expensive than ChatGPT for similar output", "Factual accuracy requires human review", "Less useful for technical or research content"],
-            price: ["Creator — $49/user/mo", "Pro — $69/user/mo (up to 5 users)", "Business — custom"] },
-          { name: "HubSpot AI", url: "https://www.hubspot.com/artificial-intelligence", icon: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64",
-            description: "AI tools embedded across HubSpot CRM, Marketing Hub, and Sales Hub for content generation, lead scoring, and predictive analytics.",
-            positives: ["Native to HubSpot — unified data across marketing and sales", "AI content generation in email and page editors", "Predictive lead scoring improves conversion focus"],
-            negatives: ["Full AI features require higher HubSpot tiers", "HubSpot ecosystem lock-in", "AI quality occasionally inconsistent on complex tasks"],
-            price: ["Starter — from $20/mo", "Professional — from $800/mo", "Enterprise — from $3,600/mo"] },
-          { name: "Copy.ai", url: "https://www.copy.ai", icon: "https://www.google.com/s2/favicons?domain=copy.ai&sz=64",
-            description: "AI-powered GTM platform for generating sales and marketing copy, automating content workflows, and running multi-step AI pipelines.",
-            positives: ["GTM workflow automation beyond simple copy", "Generous free tier for individuals", "Wide template library for sales and marketing"],
-            negatives: ["Output can be generic without heavy prompting", "Workflow builder has a learning curve", "Less brand customisation than Jasper"],
-            price: ["Free (2,000 words/mo)", "Starter — $49/mo", "Advanced — $249/mo", "Enterprise — custom"] },
-          { name: "Surfer SEO", url: "https://surferseo.com", icon: "https://www.google.com/s2/favicons?domain=surferseo.com&sz=64",
-            description: "AI SEO content optimisation tool that analyses top-ranking pages and guides writers to produce content that ranks higher in search.",
-            positives: ["Data-driven content scoring improves SEO performance", "Content Editor integrates with Google Docs and WordPress", "Keyword research and clustering built in"],
-            negatives: ["Focuses on SEO signals — content can feel formulaic", "Pricing is high for individual bloggers", "Over-reliance can lead to keyword-stuffed content"],
-            price: ["Essential — $99/mo", "Scale — $219/mo", "Enterprise — custom"] },
-          { name: "Semrush AI", url: "https://www.semrush.com/ai-features", icon: "https://www.google.com/s2/favicons?domain=semrush.com&sz=64",
-            description: "AI-enhanced features across Semrush's marketing suite for SEO, PPC, content marketing, competitor analysis, and social media management.",
-            positives: ["All-in-one digital marketing platform", "AI writing assistant integrated across the suite", "Unrivalled competitor and keyword intelligence data"],
-            negatives: ["Overwhelming — feature bloat for smaller teams", "Premium pricing for full access", "AI content tools secondary to its core analytics"],
-            price: ["Pro — $139.95/mo", "Guru — $249.95/mo", "Business — $499.95/mo"] },
-        ]
-      },
-      software: {
-        label: "Software Development",
+      technology: {
+        label: "Technology, IT & Software Firms",
         tools: [
           { name: "GitHub Copilot", url: "https://github.com/features/copilot", icon: "https://www.google.com/s2/favicons?domain=github.com&sz=64",
-            description: "AI pair programmer by GitHub and OpenAI that autocompletes code, suggests functions, and generates tests inline in your IDE.",
-            positives: ["Deep IDE integration (VS Code, JetBrains, Vim, etc.)", "Vast public code training — strong context awareness", "Copilot Chat handles explanation and debugging"],
-            negatives: ["Can suggest outdated or insecure code patterns", "Requires code review — not a replacement for engineering judgement", "Privacy concerns around code sent to the cloud"],
-            price: ["Individual — $10/mo", "Business — $19/user/mo", "Enterprise — $39/user/mo"] },
-          { name: "Cursor", url: "https://www.cursor.sh", icon: "https://www.google.com/s2/favicons?domain=cursor.sh&sz=64",
-            description: "AI-first code editor (VS Code fork) with deep multi-file editing, codebase understanding, and natural language code generation.",
-            positives: ["Multi-file edits with full codebase context", "Composer mode handles complex multi-step changes", "Fast iteration — feels like pair programming with a senior dev"],
-            negatives: ["VS Code fork — some extensions may behave differently", "Privacy-conscious teams may dislike codebase indexing", "Can be overconfident on complex architectural decisions"],
-            price: ["Hobby — Free", "Pro — $20/mo", "Business — $40/user/mo"] },
-          { name: "Claude (Anthropic)", url: "https://www.anthropic.com", icon: "https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
-            description: "Anthropic's AI assistant with a 200K token context window, excelling at code review, architecture discussions, and complex debugging.",
-            positives: ["200K token context — handles entire codebases", "Excellent reasoning through complex bugs and architecture", "Strong safety and instruction-following behaviour"],
-            negatives: ["No native IDE plugin (relies on third-party integrations)", "API can be slower than GPT-4 at peak times", "Less training data on niche or proprietary frameworks"],
-            price: ["Claude.ai Free", "Pro — $20/mo", "Team — $30/user/mo", "API — from $3/MTok"] },
-          { name: "ChatGPT", url: "https://chat.openai.com", icon: "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
-            description: "OpenAI's general-purpose AI assistant widely used for code generation, debugging, documentation, and technical Q&A by developers.",
-            positives: ["Massive community — huge library of prompts and guides", "Code Interpreter extends functionality significantly", "Broadly capable across languages and frameworks"],
-            negatives: ["Context window smaller than Claude for code tasks", "Knowledge cutoff limits awareness of latest libraries", "Free tier rate-limited during peak hours"],
-            price: ["Free (GPT-4o limited)", "Plus — $20/mo", "Team — $30/user/mo", "Enterprise — custom"] },
-          { name: "Tabnine", url: "https://www.tabnine.com", icon: "https://www.google.com/s2/favicons?domain=tabnine.com&sz=64",
-            description: "AI code completion focused on privacy and security, offering local model options and enterprise controls for sensitive codebases.",
-            positives: ["Local/private model options for air-gapped environments", "Strong enterprise security and compliance controls", "Learns from your own codebase for personalised suggestions"],
-            negatives: ["Completion quality behind Copilot and Cursor on general tasks", "Smaller model = less contextual awareness on complex code", "Less community activity than competitors"],
-            price: ["Free (limited completions)", "Pro — $12/user/mo", "Enterprise — custom"] },
+            description: "AI pair programmer integrated into VS Code, JetBrains, and other IDEs — providing real-time code completions, function generation, and chat-based code explanation.",
+            positives: ["Fastest inline code completion in the market", "Deep integration with GitHub, Actions, and PRs", "Copilot Chat provides in-IDE Q&A and refactoring"],
+            negatives: ["Can generate plausible but incorrect or insecure code", "Context window limitations in large codebases", "Subscription required — no free tier for professionals"],
+            price: ["Individual — $10/mo or $100/yr", "Business — $19/user/mo", "Enterprise — $39/user/mo"] },
+          { name: "Cursor", url: "https://www.cursor.com", icon: "https://www.google.com/s2/favicons?domain=cursor.com&sz=64",
+            description: "AI-native code editor (VS Code fork) with Composer for multi-file edits, codebase-wide context, and agentic coding capabilities powered by leading AI models.",
+            positives: ["Composer can make coordinated changes across multiple files", "Codebase indexing for deep context-aware suggestions", "Rapidly evolving feature set"],
+            negatives: ["Forked from VS Code — some extension compatibility issues", "Subscription cost on top of other tools", "Agent mode can make unexpected changes if not reviewed"],
+            price: ["Hobby — free", "Pro — $20/mo", "Business — $40/user/mo"] },
+          { name: "Linear", url: "https://www.linear.app", icon: "https://www.google.com/s2/favicons?domain=linear.app&sz=64",
+            description: "Fast, opinionated issue tracking and project management tool for software teams — with AI-powered issue creation, cycle planning, and GitHub/GitLab sync.",
+            positives: ["Keyboard-first UX that engineering teams love", "AI issue summaries and automatic labelling", "Clean roadmap and cycle planning tools"],
+            negatives: ["Opinionated workflow may not suit all teams", "Less customisable than Jira for complex enterprise processes", "No built-in time tracking"],
+            price: ["Free (up to 250 issues)", "Standard — $8/user/mo", "Plus — $14/user/mo"] },
+          { name: "Snyk", url: "https://www.snyk.io", icon: "https://www.google.com/s2/favicons?domain=snyk.io&sz=64",
+            description: "Developer-first security platform that scans code, open-source dependencies, containers, and IaC for vulnerabilities — integrating directly into CI/CD pipelines.",
+            positives: ["Finds vulnerabilities early in the development lifecycle", "Actionable fix suggestions with PR auto-remediation", "Strong open-source and container scanning"],
+            negatives: ["Noise from false positives requires tuning", "Pricing scales quickly with team size", "Some findings require manual security expertise to interpret"],
+            price: ["Free (limited scans)", "Team — $25/month/contributor", "Enterprise — contact for pricing"] },
+          { name: "Atlassian Cloud", url: "https://www.atlassian.com", icon: "https://www.google.com/s2/favicons?domain=atlassian.com&sz=64",
+            description: "Jira and Confluence suite for software teams covering issue tracking, sprint planning, documentation, and AI-powered summarisation and automation.",
+            positives: ["Industry-standard tooling — most dev teams already know Jira", "Atlassian Intelligence adds sprint summaries and action items", "Deep integration across Jira, Confluence, and Bitbucket"],
+            negatives: ["Jira can become slow and complex without discipline", "Pricing has increased significantly for Cloud tier", "Confluence can become a docs graveyard without governance"],
+            price: ["Free (up to 10 users)", "Standard — $8.15/user/mo", "Premium — $16/user/mo", "Enterprise — contact for pricing"] },
+        ]
+      },
+      trades: {
+        label: "Trades, Construction & Property Services",
+        tools: [
+          { name: "ServiceM8", url: "https://www.servicem8.com", icon: "https://www.google.com/s2/favicons?domain=servicem8.com&sz=64",
+            description: "Job management and scheduling app for trades and field service businesses — covering quoting, dispatching, invoicing, and client communications from mobile.",
+            positives: ["Excellent mobile-first experience for tradies in the field", "Fast quote-to-invoice workflow", "Xero and QuickBooks integration for seamless accounting"],
+            negatives: ["Primarily suited to small-to-medium trade businesses", "Limited project management for large construction jobs", "Per-job pricing model can cost more for high-volume operators"],
+            price: ["Starter — $29/mo (15 jobs)", "Growing — $109/mo (50 jobs)", "Premium — $349/mo (unlimited jobs)"] },
+          { name: "Procore", url: "https://www.procore.com", icon: "https://www.google.com/s2/favicons?domain=procore.com&sz=64",
+            description: "Construction project management platform used by builders and contractors for plans, RFIs, submittals, scheduling, cost management, and site safety.",
+            positives: ["Industry-leading construction project management platform", "Powerful document management and drawing coordination", "Strong mobile app for site access to drawings and forms"],
+            negatives: ["Expensive — suited to commercial builders and larger projects", "Implementation and training require time investment", "Some features require separate modules at extra cost"],
+            price: ["Contact Procore for project/company-based pricing"] },
+          { name: "Buildxact", url: "https://www.buildxact.com.au", icon: "https://www.google.com/s2/favicons?domain=buildxact.com.au&sz=64",
+            description: "Cloud estimating and job management software for residential builders and tradies — covering takeoffs, quoting, purchase orders, and project tracking.",
+            positives: ["Fast digital takeoff from plans without specialist software", "Purpose-built for Australian residential builders", "Integrates quantity takeoffs directly into estimates"],
+            negatives: ["Less suited to commercial construction workflows", "Reporting can be limited compared to larger ERP tools", "Template setup requires upfront configuration"],
+            price: ["Starter — $149/mo", "Standard — $249/mo", "Premium — $449/mo"] },
+          { name: "simPRO", url: "https://www.simpro.com.au", icon: "https://www.google.com/s2/favicons?domain=simpro.com.au&sz=64",
+            description: "End-to-end job management and field service ERP for trade contractors covering estimating, scheduling, inventory, project management, and invoicing.",
+            positives: ["Comprehensive ERP functionality for trade businesses", "Strong project job costing and work-in-progress tracking", "Good for multi-trade and multi-site operations"],
+            negatives: ["Complex to implement — requires training investment", "Higher price point than lightweight tools like ServiceM8", "UI can feel dated in places"],
+            price: ["Contact simPRO for pricing"] },
+          { name: "Tradify", url: "https://www.tradifyhq.com", icon: "https://www.google.com/s2/favicons?domain=tradifyhq.com&sz=64",
+            description: "Simple job management app for trade businesses covering quoting, job scheduling, timesheets, invoicing, and GPS tracking of staff in the field.",
+            positives: ["Very easy to set up and use — built for tradies, not tech teams", "Affordable compared to simPRO and Procore", "Live GPS tracking of staff is a standout feature"],
+            negatives: ["Less functionality than simPRO for large multi-trade operations", "Reporting is basic", "Limited customisation for complex business workflows"],
+            price: ["$35/user/mo — volume discounts available"] },
+        ]
+      },
+      transport: {
+        label: "Transport, Logistics & Field Services",
+        tools: [
+          { name: "Samsara", url: "https://www.samsara.com", icon: "https://www.google.com/s2/favicons?domain=samsara.com&sz=64",
+            description: "Connected operations platform for fleet and field service businesses — combining GPS tracking, dashcams, ELD compliance, driver safety scores, and route analytics.",
+            positives: ["Best-in-class fleet visibility and driver safety analytics", "AI dashcam coaching reduces accidents and insurance costs", "Single pane of glass for vehicles, assets, and field workers"],
+            negatives: ["Hardware upfront costs plus ongoing subscription", "Contract lock-in common for hardware-inclusive deals", "Some features US-centric (ELD compliance)"],
+            price: ["Contact Samsara for fleet-size pricing"] },
+          { name: "Teletrac Navman", url: "https://www.teletracnavman.com.au", icon: "https://www.google.com/s2/favicons?domain=teletracnavman.com.au&sz=64",
+            description: "Australian fleet management and GPS tracking platform covering vehicle location, driver behaviour, job dispatch, fatigue management, and NHVR compliance.",
+            positives: ["Purpose-built for Australian compliance (NHVR, fatigue)", "Strong local support team", "Covers light and heavy vehicle fleets"],
+            negatives: ["UI is less modern than newer entrants like Samsara", "Some users report hardware reliability issues", "Pricing can be opaque"],
+            price: ["Contact Teletrac Navman for fleet pricing"] },
+          { name: "Circuit", url: "https://www.getcircuit.com", icon: "https://www.google.com/s2/favicons?domain=getcircuit.com&sz=64",
+            description: "Route optimisation and delivery management software for couriers, delivery fleets, and field service teams — with real-time driver tracking and recipient notifications.",
+            positives: ["Extremely easy to set up and start optimising routes", "Live driver tracking and ETA notifications for recipients", "Scales from solo couriers to large fleets"],
+            negatives: ["Not a full TMS — limited for complex logistics operations", "Proof of delivery features are basic compared to Onfleet", "Limited API integrations for enterprise workflows"],
+            price: ["Free (1 driver, basic)", "Essentials — $100/mo (up to 2 drivers)", "Standard — $200/mo", "Pro — contact for pricing"] },
+          { name: "Onfleet", url: "https://www.onfleet.com", icon: "https://www.google.com/s2/favicons?domain=onfleet.com&sz=64",
+            description: "Last-mile delivery management platform with AI-powered route optimisation, real-time tracking, proof of delivery, and driver app for courier and logistics businesses.",
+            positives: ["Best-in-class last-mile delivery management", "Detailed proof of delivery with photos and signatures", "Powerful API for integration with ecommerce and TMS"],
+            negatives: ["Priced per task — can be expensive at high volume", "Advanced features locked to higher plans", "Less suited to heavy freight or long-haul operations"],
+            price: ["Launch — $550/mo (2,000 tasks)", "Scale — $1,265/mo (5,000 tasks)", "Enterprise — contact for pricing"] },
+          { name: "ServiceMax", url: "https://www.servicemax.com", icon: "https://www.google.com/s2/favicons?domain=servicemax.com&sz=64",
+            description: "Field service management platform for asset-intensive industries covering work order management, parts inventory, predictive maintenance, and field technician scheduling.",
+            positives: ["Purpose-built for complex field service and asset management", "Strong IoT and predictive maintenance integrations", "Deep Salesforce integration for CRM-connected field ops"],
+            negatives: ["Enterprise pricing and implementation timeline", "Requires Salesforce or significant integration effort", "Overkill for simpler trades or courier operations"],
+            price: ["Contact ServiceMax for enterprise pricing"] },
         ]
       },
     };
@@ -976,7 +1173,7 @@
       document.getElementById('tt-neg').innerHTML = tool.negatives.map(n => `<li>${n}</li>`).join('');
       const priceSection = document.getElementById('tt-price-section');
       if (tool.price && tool.price.length) {
-        document.getElementById('tt-price').innerHTML = tool.price.map(p => `<li>${p}</li>`).join('');
+        document.getElementById('tt-price').innerHTML = tool.price.map(p => `<li>${p.replace(/\$/g, 'USD\u00a0$')}</li>`).join('');
         priceSection.style.display = '';
       } else {
         priceSection.style.display = 'none';
@@ -1009,7 +1206,7 @@
       document.getElementById('tm-neg').innerHTML = tool.negatives.map(n => `<li>${n}</li>`).join('');
       const priceSection = document.getElementById('tm-price-section');
       if (tool.price && tool.price.length) {
-        document.getElementById('tm-price').innerHTML = tool.price.map(p => `<li>${p}</li>`).join('');
+        document.getElementById('tm-price').innerHTML = tool.price.map(p => `<li>${p.replace(/\$/g, 'USD\u00a0$')}</li>`).join('');
         priceSection.style.display = '';
       } else {
         priceSection.style.display = 'none';
@@ -1051,6 +1248,14 @@
       btn.style.background = 'var(--green)';
       input.disabled = true;
       btn.disabled   = true;
+    }
+
+    function handleFeedback(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.textContent = 'Feedback sent!';
+      btn.style.background = 'var(--green)';
+      btn.disabled = true;
     }
 
     function handleContact(e) {
