@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Tool Tips — Daily Rankings by Industry</title>
+  <style>
+    /* ── Gruvbox palette ── */
+    :root {
+      --bg:     #282828;
+      --bg1:    #3c3836;
+      --bg2:    #504945;
+      --bg3:    #665c54;
+      --bg4:    #7c6f64;
+      --fg:     #ebdbb2;
+      --fg1:    #d5c4a1;
+      --fg2:    #bdae93;
+      --red:    #fb4934;
+      --green:  #b8bb26;
+      --yellow: #fabd2f;
+      --blue:   #83a598;
+      --purple: #d3869b;
+      --aqua:   #8ec07c;
+      --orange: #fe8019;
+      --gray:   #928374;
+      --bronze: #cd7f32;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--yellow); text-decoration: underline; }
+
+    /* ── Header ── */
+    header {
+      background: var(--bg1);
+      border-bottom: 2px solid var(--orange);
+      padding: 1.4rem 2rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: var(--yellow);
+      letter-spacing: 0.05em;
+    }
+    header h1 span { color: var(--orange); }
+    header p {
+      margin-top: 0.3rem;
+      color: var(--fg2);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Main content ── */
+    main {
+      flex: 1;
+      max-width: 720px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.2rem;
+    }
+
+    /* ── Newsletter form ── */
+    .newsletter {
+      background: var(--bg1);
+      border: 1px solid var(--bg3);
+      border-radius: 4px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 2rem;
+    }
+    .newsletter h2 {
+      color: var(--aqua);
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .newsletter p {
+      color: var(--fg2);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .newsletter form {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .newsletter input[type="email"] {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg2);
+      border: 1px solid var(--bg4);
+      border-radius: 3px;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.55rem 0.8rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .newsletter input[type="email"]:focus { border-color: var(--blue); }
+    .newsletter input[type="email"]::placeholder { color: var(--bg4); }
+    .btn {
+      background: var(--orange);
+      border: none;
+      border-radius: 3px;
+      color: var(--bg);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: bold;
+      padding: 0.55rem 1.2rem;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--yellow); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--orange);
+      color: var(--orange);
+    }
+    .btn-outline:hover { background: var(--orange); color: var(--bg); }
+
+    /* ── Rankings header inline select ── */
+    .rankings-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex: 1;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+    .rankings-header select {
+      background: var(--bg2);
+      border: 1px solid var(--bg3);
+      border-radius: 3px;
+      color: var(--yellow);
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.3rem 0.6rem;
+      outline: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 160px;
+      transition: border-color 0.2s;
+    }
+    .rankings-header select:focus { border-color: var(--blue); }
+
+    /* ── Rankings table ── */
+    .rankings-wrap {
+      background: var(--bg1);
+      border: 1px solid var(--bg3);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .rankings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1.2rem;
+    }
+    .rankings-header h2 {
+      color: var(--green);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .updated-tag {
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead tr {
+      background: var(--bg2);
+    }
+    thead th {
+      color: var(--orange);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      padding: 0.7rem 1.2rem;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--bg2);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg2); }
+    tbody td {
+      padding: 0.85rem 1.2rem;
+      font-size: 0.95rem;
+    }
+    td.rank {
+      color: var(--yellow);
+      font-weight: bold;
+      font-size: 1.1rem;
+      width: 60px;
+    }
+    td.rank[data-rank="1"] { color: var(--yellow); }
+    td.rank[data-rank="2"] { color: #ffffff; }
+    td.rank[data-rank="3"] { color: var(--bronze); }
+    td.rank[data-rank="4"],
+    td.rank[data-rank="5"] { color: var(--fg2); }
+    td.tool-name { color: var(--fg); }
+    td.tool-name a { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+    td.tool-name a:hover { color: var(--yellow); }
+    td.tool-desc {
+      color: var(--gray);
+      font-size: 0.8rem;
+    }
+
+    /* ── CTA line ── */
+    .cta-line {
+      background: var(--bg1);
+      border: 1px solid var(--bg3);
+      border-left: 3px solid var(--purple);
+      border-radius: 4px;
+      padding: 1rem 1.4rem;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+      color: var(--fg2);
+    }
+    .cta-line a {
+      color: var(--purple);
+      font-weight: bold;
+    }
+    .cta-line a:hover { color: var(--yellow); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--bg1);
+      border-top: 1px solid var(--bg3);
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--gray);
+    }
+    footer span { margin: 0 0.5rem; }
+    footer a { color: var(--gray); }
+    footer a:hover { color: var(--yellow); }
+
+    /* ── Modals ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-frame {
+      position: relative;
+      max-width: 500px;
+      width: 100%;
+    }
+    .modal {
+      background: var(--bg1);
+      border: 1px solid var(--bg3);
+      border-top: 3px solid var(--orange);
+      border-radius: 5px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 1.8rem;
+    }
+    .modal h2 {
+      color: var(--yellow);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .modal p, .modal li {
+      color: var(--fg2);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin-bottom: 0.7rem;
+    }
+    .modal ul { padding-left: 1.2rem; }
+    .modal-close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(50%, -50%);
+      background: var(--orange);
+      color: var(--bg0);
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      transition: background 0.2s;
+      z-index: 10;
+      line-height: 1;
+    }
+    .modal-close:hover { background: var(--red); }
+    .modal form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .modal label {
+      color: var(--fg2);
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .modal input, .modal textarea, .modal select {
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--bg4);
+      border-radius: 3px;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.55rem 0.8rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal input:focus, .modal textarea:focus, .modal select:focus { border-color: var(--blue); }
+    .modal input::placeholder, .modal textarea::placeholder { color: var(--bg4); }
+    .modal textarea { resize: vertical; min-height: 90px; }
+    .modal .btn { width: 100%; margin-top: 0.4rem; }
+
+    /* ── Tooltip ── */
+    #tt {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      width: 290px;
+      background: var(--bg1);
+      border: 1px solid var(--bg3);
+      border-left: 3px solid var(--orange);
+      border-radius: 5px;
+      padding: 1rem 1.1rem;
+      font-size: 0.8rem;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+    #tt.visible { display: block; }
+    .tt-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.65rem;
+    }
+    #tt-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      background: var(--bg2);
+      flex-shrink: 0;
+    }
+    #tt-name {
+      color: var(--yellow);
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    #tt-rank { color: var(--gray); font-size: 0.72rem; margin-top: 0.1rem; }
+    #tt-desc {
+      color: var(--fg2);
+      line-height: 1.55;
+      margin-bottom: 0.65rem;
+    }
+    .tt-section { margin-bottom: 0.55rem; }
+    .tt-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.25rem;
+    }
+    .tt-pos { color: var(--green); }
+    .tt-neg { color: var(--red); }
+    .tt-price { color: var(--blue); }
+    #tt ul { padding-left: 0.9rem; }
+    #tt ul li { color: var(--fg2); margin-bottom: 0.18rem; line-height: 1.4; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--bg4); }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ HEADER ══════════ -->
+  <header>
+    <h1>AI Tool Tips</h1>
+    <p>AI-powered daily rankings of the top 5 tools by industry</p>
+  </header>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+      <h2>Daily Newsletter</h2>
+      <p>Get the latest AI tool rankings delivered to your inbox every morning.</p>
+      <form onsubmit="handleNewsletter(event)">
+        <input type="email" placeholder="your@email.com" required />
+        <button type="submit" class="btn">Subscribe</button>
+      </form>
+    </section>
+
+    <!-- Rankings table -->
+    <div class="rankings-wrap">
+      <div class="rankings-header">
+        <div class="rankings-header-left">
+          <h2>Industry:</h2>
+          <select id="industry-select" onchange="renderTable()">
+            <option value="bizdev">Business Development</option>
+            <option value="content">Content Creation &amp; Media</option>
+            <option value="cx">Customer Support</option>
+            <option value="design">Digital Design</option>
+            <option value="finance">Finance &amp; Accounting</option>
+            <option value="health">Healthcare</option>
+            <option value="hr">HR &amp; Recruitment</option>
+            <option value="legal">Legal</option>
+            <option value="marketing">Marketing</option>
+            <option value="software">Software Development</option>
+          </select>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tool</th>
+          </tr>
+        </thead>
+        <tbody id="rankings-body"></tbody>
+      </table>
+      <div style="padding: 0.4rem 1.2rem; border-top: 1px solid var(--bg2);">
+        <span class="updated-tag" id="updated-tag"></span>
+      </div>
+    </div>
+
+    <!-- CTA line -->
+    <div class="cta-line">
+      Want personalised advice on implementing AI tools and workflows in your business?
+      <a href="#" onclick="openModal('contact-modal'); return false;">Get in touch &rarr;</a>
+    </div>
+
+  </main>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer>
+    <span>&copy; 2026 AI Tool Tips</span>
+    &mdash;
+    <a href="#" onclick="openModal('terms-modal'); return false;">Terms &amp; Conditions</a>
+    <span>|</span>
+    <a href="#" onclick="openModal('privacy-modal'); return false;">Privacy Policy</a>
+  </footer>
+
+
+  <!-- ══════════ MODAL: Contact ══════════ -->
+  <div class="modal-overlay" id="contact-modal">
+    <div class="modal-frame">
+      <button class="modal-close" onclick="closeModal('contact-modal')" aria-label="Close">&times;</button>
+      <div class="modal">
+      <h2>Get Personal AI Advice</h2>
+      <p>Tell me about your business and I'll help you identify the right AI tools and workflows to save time and grow faster.</p>
+      <form onsubmit="handleContact(event)">
+        <div>
+          <label for="c-name">Name</label>
+          <input type="text" id="c-name" placeholder="Jane Smith" required />
+        </div>
+        <div>
+          <label for="c-email">Email</label>
+          <input type="email" id="c-email" placeholder="jane@company.com" required />
+        </div>
+        <div>
+          <label for="c-industry">Your Industry</label>
+          <select id="c-industry">
+            <option value="">Select an industry…</option>
+            <option>Software Development</option>
+            <option>Digital Design</option>
+            <option>Marketing</option>
+            <option>Business Development</option>
+            <option>Finance &amp; Accounting</option>
+            <option>Legal</option>
+            <option>HR &amp; Recruitment</option>
+            <option>Customer Support</option>
+            <option>Healthcare</option>
+            <option>Content Creation &amp; Media</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="c-msg">What are you hoping to achieve?</label>
+          <textarea id="c-msg" placeholder="e.g. automate our content pipeline, reduce admin overhead…"></textarea>
+        </div>
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MODAL: Terms ══════════ -->
+  <div class="modal-overlay" id="terms-modal">
+    <div class="modal-frame">
+      <button class="modal-close" onclick="closeModal('terms-modal')" aria-label="Close">&times;</button>
+      <div class="modal">
+      <h2>Terms &amp; Conditions</h2>
+      <p>Last updated: 13 March 2026</p>
+      <p>By using AI Tool Tips ("the Service") you agree to these terms. Please read them carefully.</p>
+      <ul>
+        <li><strong style="color:var(--aqua)">Nature of the Service.</strong> AI Tool Tips provides AI-generated, informational rankings of software tools for general guidance only. Rankings are updated daily and do not constitute professional, financial, or legal advice.</li>
+        <li><strong style="color:var(--aqua)">Accuracy.</strong> We strive to keep rankings current and accurate, but we make no warranties regarding completeness or fitness for a particular purpose. Tool availability and features change frequently.</li>
+        <li><strong style="color:var(--aqua)">No Endorsement.</strong> Inclusion in a ranking does not imply endorsement of any product or vendor.</li>
+        <li><strong style="color:var(--aqua)">Newsletter.</strong> By subscribing you consent to receive our daily email digest. You may unsubscribe at any time via the link in any email.</li>
+        <li><strong style="color:var(--aqua)">Intellectual Property.</strong> All content on this site is owned by AI Tool Tips or its licensors. You may not reproduce rankings or copy content without prior written permission.</li>
+        <li><strong style="color:var(--aqua)">Limitation of Liability.</strong> To the fullest extent permitted by law, AI Tool Tips is not liable for any indirect, incidental, or consequential damages arising from your use of the Service.</li>
+        <li><strong style="color:var(--aqua)">Changes.</strong> We may update these terms at any time. Continued use of the Service constitutes acceptance of the revised terms.</li>
+        <li><strong style="color:var(--aqua)">Governing Law.</strong> These terms are governed by the laws of the applicable jurisdiction in which AI Tool Tips operates.</li>
+      </ul>
+      <p>Questions? Contact us via the form on this page.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MODAL: Privacy ══════════ -->
+  <div class="modal-overlay" id="privacy-modal">
+    <div class="modal-frame">
+      <button class="modal-close" onclick="closeModal('privacy-modal')" aria-label="Close">&times;</button>
+      <div class="modal">
+      <h2>Privacy Policy</h2>
+      <p>Last updated: 13 March 2026</p>
+      <p>Your privacy matters to us. This policy explains what we collect, why, and what we do — and don't do — with it.</p>
+      <ul>
+        <li><strong style="color:var(--aqua)">No data retention.</strong> We do not store, log, or retain any personal data beyond what is necessary to send a single response or newsletter confirmation. We do not build user profiles.</li>
+        <li><strong style="color:var(--aqua)">No data sold.</strong> We will never sell, rent, lease, or trade your personal information to any third party under any circumstances.</li>
+        <li><strong style="color:var(--aqua)">Newsletter emails.</strong> If you subscribe, your email address is used solely to send the daily AI Tool Tips digest. It is not shared with any third party. You can unsubscribe instantly at any time.</li>
+        <li><strong style="color:var(--aqua)">Contact form.</strong> Information submitted via the contact form is used only to respond to your enquiry. It is not added to any marketing list without your explicit consent.</li>
+        <li><strong style="color:var(--aqua)">Cookies.</strong> This site does not use tracking or advertising cookies. Any session-level storage is used solely for UI state (e.g. your selected industry) and is never transmitted to a server.</li>
+        <li><strong style="color:var(--aqua)">Third-party services.</strong> We do not embed third-party analytics, advertising scripts, or social tracking pixels on this site.</li>
+        <li><strong style="color:var(--aqua)">Your rights.</strong> Depending on your jurisdiction you may have the right to access, correct, or erase any personal data we hold. Contact us and we will respond within 30 days.</li>
+        <li><strong style="color:var(--aqua)">Security.</strong> All data in transit is encrypted via HTTPS. We apply reasonable technical measures to prevent unauthorised access.</li>
+      </ul>
+      <p>Questions about this policy? Use the contact form on this page.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════ MODAL: Tool detail (mobile) ══════════ -->
+  <div class="modal-overlay" id="tool-modal">
+    <div class="modal-frame">
+      <button class="modal-close" onclick="closeModal('tool-modal')" aria-label="Close">&times;</button>
+      <div class="modal">
+      <div class="tt-header" style="margin-bottom:0.9rem">
+        <img id="tm-icon" src="" alt="" style="width:32px;height:32px;border-radius:4px;background:var(--bg2);flex-shrink:0" />
+        <div>
+          <div id="tm-name" style="color:var(--yellow);font-weight:bold;font-size:1rem"></div>
+          <div id="tm-rank" style="color:var(--gray);font-size:0.8rem;margin-top:0.15rem"></div>
+        </div>
+      </div>
+      <p id="tm-desc" style="color:var(--fg2);font-size:0.85rem;line-height:1.6;margin-bottom:0.9rem"></p>
+      <div class="tt-section">
+        <div class="tt-label tt-pos">Positives</div>
+        <ul id="tm-pos"></ul>
+      </div>
+      <div class="tt-section">
+        <div class="tt-label tt-neg">Negatives</div>
+        <ul id="tm-neg"></ul>
+      </div>
+      <div class="tt-section" id="tm-price-section">
+        <div class="tt-label tt-price">Pricing</div>
+        <ul id="tm-price"></ul>
+      </div>
+      <a id="tm-link" href="#" target="_blank" rel="noopener noreferrer" class="btn" style="display:block;text-align:center;margin-top:0.6rem">Visit Website &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TOOLTIP ══════════ -->
+  <div id="tt" role="tooltip" aria-hidden="true">
+    <div class="tt-header">
+      <img id="tt-icon" src="" alt="" />
+      <div>
+        <div id="tt-name"></div>
+        <div id="tt-rank"></div>
+      </div>
+    </div>
+    <p id="tt-desc"></p>
+    <div class="tt-section">
+      <div class="tt-label tt-pos">Positives</div>
+      <ul id="tt-pos"></ul>
+    </div>
+    <div class="tt-section">
+      <div class="tt-label tt-neg">Negatives</div>
+      <ul id="tt-neg"></ul>
+    </div>
+    <div class="tt-section" id="tt-price-section">
+      <div class="tt-label tt-price">Pricing</div>
+      <ul id="tt-price"></ul>
+    </div>
+  </div>
+
+  <!-- ══════════ SCRIPT ══════════ -->
+  <script>
+    // ── Data ───────────────────────────────────────────────────────────────
+    const data = {
+      bizdev: {
+        label: "Business Development",
+        tools: [
+          { name: "Apollo.io", url: "https://www.apollo.io", icon: "https://www.google.com/s2/favicons?domain=apollo.io&sz=64",
+            description: "All-in-one sales intelligence platform with 275M+ B2B contacts, email sequencing, and AI-powered prospecting.",
+            positives: ["Massive verified contact database", "Built-in email sequencing & dialers", "Strong Chrome extension for LinkedIn"],
+            negatives: ["Data accuracy inconsistent on niche contacts", "UI can feel cluttered", "Premium tiers costly for small teams"],
+            price: ["Free (50 credits/mo)", "Basic — $49/user/mo", "Professional — $79/user/mo", "Organization — $119/user/mo"] },
+          { name: "Gong.io", url: "https://www.gong.io", icon: "https://www.google.com/s2/favicons?domain=gong.io&sz=64",
+            description: "Revenue intelligence platform that records, transcribes, and analyses sales calls to surface winning behaviours.",
+            positives: ["Deep call analytics and coaching insights", "CRM auto-population saves reps time", "Tracks deal risk proactively"],
+            negatives: ["Expensive — pricing not public", "Requires org-wide buy-in", "Can feel intrusive to sales reps"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Salesforce Einstein", url: "https://www.salesforce.com/products/einstein", icon: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64",
+            description: "AI layer built into Salesforce CRM offering predictive lead scoring, opportunity insights, and automated activity capture.",
+            positives: ["Native to Salesforce — no integration needed", "Predictive scoring improves rep prioritisation", "Continuously learns from CRM data"],
+            negatives: ["Only useful if already on Salesforce", "Requires clean CRM data to be effective", "Additional licence cost on top of Salesforce"],
+            price: ["Einstein 1 Sales — from $500/user/mo"] },
+          { name: "Clay", url: "https://www.clay.com", icon: "https://www.google.com/s2/favicons?domain=clay.com&sz=64",
+            description: "Data enrichment and outreach automation that pulls from 75+ sources to build hyper-personalised prospect lists.",
+            positives: ["75+ enrichment providers in one tool", "Highly flexible workflow builder", "AI-written personalised outreach at scale"],
+            negatives: ["Steep learning curve for non-technical users", "Credit model can get expensive", "Requires separate outreach tool"],
+            price: ["Free (100 credits/mo)", "Starter — $149/mo", "Explorer — $349/mo", "Pro — $800/mo"] },
+          { name: "LinkedIn Sales Navigator", url: "https://business.linkedin.com/sales-solutions/sales-navigator", icon: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64",
+            description: "LinkedIn's premium sales tool for advanced prospect search, lead recommendations, and real-time account alerts.",
+            positives: ["Access to LinkedIn's 1B+ member graph", "Advanced filters for targeted searches", "Real-time job change and news alerts"],
+            negatives: ["Expensive relative to feature depth", "InMail credits limited on lower tiers", "Data only as good as member profiles"],
+            price: ["Core — $99.99/user/mo", "Advanced — $179.99/user/mo", "Advanced Plus — custom"] },
+        ]
+      },
+      content: {
+        label: "Content Creation & Media",
+        tools: [
+          { name: "Descript", url: "https://www.descript.com", icon: "https://www.google.com/s2/favicons?domain=descript.com&sz=64",
+            description: "All-in-one video and podcast editor where you edit media by editing its text transcript, with AI voice cloning and overdub.",
+            positives: ["Edit video by editing text — huge time saver", "Excellent AI transcription accuracy", "Overdub for seamless voice corrections"],
+            negatives: ["Not suited for complex multi-track production", "AI voice cloning needs good sample audio", "Export options more limited than Premiere"],
+            price: ["Free (1hr transcription/mo)", "Hobbyist — $24/mo", "Creator — $40/mo", "Business — $80/mo"] },
+          { name: "ElevenLabs", url: "https://elevenlabs.io", icon: "https://www.google.com/s2/favicons?domain=elevenlabs.io&sz=64",
+            description: "AI voice synthesis producing the most realistic text-to-speech and voice cloning available, supporting 30+ languages.",
+            positives: ["Industry-leading voice naturalness", "Voice cloning from short samples", "Wide language and accent support"],
+            negatives: ["Higher tiers needed for commercial use", "Cloned voices raise ethical concerns if misused", "Real-time latency can be inconsistent"],
+            price: ["Free (10k chars/mo)", "Starter — $5/mo", "Creator — $22/mo", "Pro — $99/mo"] },
+          { name: "Runway ML", url: "https://runwayml.com", icon: "https://www.google.com/s2/favicons?domain=runwayml.com&sz=64",
+            description: "Generative AI video platform enabling text-to-video, image-to-video, and advanced AI-powered video editing tools.",
+            positives: ["Leading text-to-video generation quality", "Comprehensive suite of creative AI tools", "Regular model updates pushing quality forward"],
+            negatives: ["Video generation is credit-hungry and costly", "Output length limited on lower tiers", "Can struggle with complex motion consistency"],
+            price: ["Free (125 credits)", "Standard — $15/mo", "Pro — $35/mo", "Unlimited — $95/mo"] },
+          { name: "Otter.ai", url: "https://otter.ai", icon: "https://www.google.com/s2/favicons?domain=otter.ai&sz=64",
+            description: "AI meeting assistant that joins calls to transcribe, summarise, and extract action items in real time.",
+            positives: ["Joins Zoom/Meet/Teams automatically", "Real-time transcription with speaker labels", "Auto-generated summaries and action items"],
+            negatives: ["Accuracy drops with heavy accents or jargon", "Privacy concerns around AI joining calls", "Free tier has limited monthly minutes"],
+            price: ["Free (300 mins/mo)", "Pro — $16.99/user/mo", "Business — $30/user/mo", "Enterprise — custom"] },
+          { name: "Notion AI", url: "https://www.notion.so/product/ai", icon: "https://www.google.com/s2/favicons?domain=notion.so&sz=64",
+            description: "AI writing and knowledge assistant built into Notion for drafting, summarising, translating, and querying your workspace.",
+            positives: ["Deeply integrated into Notion's workflow", "Queries and summarises across your entire workspace", "Handles drafting, editing, and translation well"],
+            negatives: ["Only useful if your team already uses Notion", "Not as powerful as standalone AI writing tools", "Add-on cost on top of Notion subscription"],
+            price: ["Notion AI add-on — $10/user/mo"] },
+        ]
+      },
+      cx: {
+        label: "Customer Support",
+        tools: [
+          { name: "Intercom Fin", url: "https://www.intercom.com/fin", icon: "https://www.google.com/s2/favicons?domain=intercom.com&sz=64",
+            description: "GPT-4 powered AI agent built on your support content that resolves customer queries autonomously with seamless human handoff.",
+            positives: ["High resolution rate out of the box", "Smooth handoff to human agents", "Uses existing help content as knowledge base"],
+            negatives: ["Resolution-based pricing expensive at scale", "Needs well-structured support content", "Limited AI personality customisation on lower tiers"],
+            price: ["Fin AI Agent — $0.99/resolution", "Full Intercom plans from $74/mo"] },
+          { name: "Zendesk AI", url: "https://www.zendesk.com/ai", icon: "https://www.google.com/s2/favicons?domain=zendesk.com&sz=64",
+            description: "AI suite built into Zendesk offering intelligent triage, agent assist, automated responses, and sentiment analysis.",
+            positives: ["Native to Zendesk — zero integration needed", "AI triage reduces ticket routing time", "Agent Copilot suggests responses in real time"],
+            negatives: ["AI features require higher-tier Zendesk plans", "Can feel rigid without technical configuration", "Underlying Zendesk cost is significant"],
+            price: ["AI add-on from $50/agent/mo", "Suite plans from $55/agent/mo"] },
+          { name: "Freshdesk Freddy", url: "https://www.freshworks.com/freshdesk/freddy-ai", icon: "https://www.google.com/s2/favicons?domain=freshdesk.com&sz=64",
+            description: "Freddy AI is Freshdesk's built-in AI for automated ticket deflection, agent suggestions, and predictive insights.",
+            positives: ["Good value compared to Zendesk AI", "Freddy Self Service deflects common queries effectively", "Predictive CSAT flags at-risk tickets"],
+            negatives: ["Freddy AI lags behind Intercom Fin in quality", "Some features only on Enterprise plan", "Reporting depth not as strong as competitors"],
+            price: ["Growth — $15/agent/mo", "Pro — $49/agent/mo", "Enterprise — $79/agent/mo"] },
+          { name: "Tidio", url: "https://www.tidio.com", icon: "https://www.google.com/s2/favicons?domain=tidio.com&sz=64",
+            description: "Live chat and AI chatbot platform for SMBs combining automation with human support across web and social channels.",
+            positives: ["Easy to set up — live in minutes", "Affordable for small and medium businesses", "Covers web chat, email, and social in one inbox"],
+            negatives: ["AI chatbot less sophisticated than enterprise options", "Limited CRM integrations on lower plans", "Conversation limits on cheaper tiers"],
+            price: ["Free (50 conversations/mo)", "Starter — $29/mo", "Growth — $59/mo", "Tidio+ — from $749/mo"] },
+          { name: "Forethought", url: "https://forethought.ai", icon: "https://www.google.com/s2/favicons?domain=forethought.ai&sz=64",
+            description: "Enterprise AI platform for support with triage, automated resolution, and agent assist powered by generative AI.",
+            positives: ["Strong enterprise-grade triage and routing", "Generative AI handles complex query resolution", "Integrates with Salesforce, Zendesk, ServiceNow"],
+            negatives: ["Enterprise pricing — not suited for SMBs", "Implementation requires dedicated onboarding", "Fewer community resources than larger brands"],
+            price: ["Custom pricing — contact sales"] },
+        ]
+      },
+      design: {
+        label: "Digital Design",
+        tools: [
+          { name: "Midjourney", url: "https://www.midjourney.com", icon: "https://www.google.com/s2/favicons?domain=midjourney.com&sz=64",
+            description: "Leading AI image generation tool known for exceptional aesthetic quality, used extensively by designers and creatives worldwide.",
+            positives: ["Best-in-class image aesthetic quality", "Active community with extensive prompt resources", "Consistent style and high detail output"],
+            negatives: ["Discord-only interface (web app limited)", "No free tier", "Less precise control vs Stable Diffusion"],
+            price: ["Basic — $10/mo", "Standard — $30/mo", "Pro — $60/mo", "Mega — $120/mo"] },
+          { name: "Adobe Firefly", url: "https://www.adobe.com/products/firefly.html", icon: "https://www.google.com/s2/favicons?domain=adobe.com&sz=64",
+            description: "Adobe's generative AI suite integrated across Creative Cloud, trained on licensed content for commercially safe outputs.",
+            positives: ["Commercially safe — trained on licensed Adobe Stock", "Deeply integrated into Photoshop, Illustrator, Premiere", "Generative Fill and Expand are industry-leading"],
+            negatives: ["Generative credit system limits heavy use", "Requires Creative Cloud subscription", "Image style less creative than Midjourney"],
+            price: ["Included in Creative Cloud from $54.99/mo", "Firefly standalone from $9.99/mo (100 credits)"] },
+          { name: "DALL·E 3", url: "https://openai.com/dall-e-3", icon: "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
+            description: "OpenAI's image generation model with superior prompt adherence, integrated directly into ChatGPT for conversational image creation.",
+            positives: ["Exceptional prompt-following accuracy", "Text rendering in images far superior to rivals", "Accessible via ChatGPT with no extra setup"],
+            negatives: ["Lower photographic realism than Midjourney", "Limited fine-grained style control", "Generation speed can be slow"],
+            price: ["Via ChatGPT Plus — $20/mo", "API: $0.040–$0.080 per image"] },
+          { name: "Figma AI", url: "https://www.figma.com/ai", icon: "https://www.google.com/s2/favicons?domain=figma.com&sz=64",
+            description: "AI features embedded in Figma for auto-layout suggestions, copy generation, design asset search, and prototyping assistance.",
+            positives: ["Integrated into your existing Figma workflow", "Auto-rename layers and generate copy in context", "Speeds up repetitive design tasks significantly"],
+            negatives: ["AI features still maturing vs standalone tools", "Requires Figma subscription", "Not a generative image tool"],
+            price: ["Starter — Free", "Professional — $12/editor/mo", "Organisation — $45/editor/mo"] },
+          { name: "Canva AI", url: "https://www.canva.com/ai-image-generator", icon: "https://www.google.com/s2/favicons?domain=canva.com&sz=64",
+            description: "AI tools within Canva including Magic Design, text-to-image, background remover, and AI presentation generation for non-designers.",
+            positives: ["Extremely accessible for non-designers", "Magic Design creates full decks/posts in seconds", "Generous free tier with AI features included"],
+            negatives: ["Output quality lower than specialised AI tools", "Less suited for professional brand-critical design", "AI image generation limited to simpler outputs"],
+            price: ["Free (limited AI features)", "Pro — $15/mo", "Teams — $10/user/mo (min 3 users)"] },
+        ]
+      },
+      finance: {
+        label: "Finance & Accounting",
+        tools: [
+          { name: "Vic.ai", url: "https://www.vic.ai", icon: "https://www.google.com/s2/favicons?domain=vic.ai&sz=64",
+            description: "Autonomous AI accounting platform that automates invoice processing, coding, and approval workflows with near-human accuracy.",
+            positives: ["90%+ automation rate on invoice processing", "Learns and improves from your accounting data", "Integrates with major ERPs like SAP and Oracle"],
+            negatives: ["Premium pricing — better suited to mid-market+", "Implementation takes time for initial training", "Less effective for highly varied invoice types"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Domo AI", url: "https://www.domo.com/ai", icon: "https://www.google.com/s2/favicons?domain=domo.com&sz=64",
+            description: "Business intelligence platform with AI-driven insights, natural language querying, and automated anomaly detection across financial data.",
+            positives: ["Natural language data querying for non-technical users", "Real-time financial dashboards and alerts", "1000+ data connectors"],
+            negatives: ["Expensive — pricing not transparent", "Steeper learning curve for advanced dashboards", "Overkill for small finance teams"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Sage Copilot", url: "https://www.sage.com", icon: "https://www.google.com/s2/favicons?domain=sage.com&sz=64",
+            description: "AI assistant embedded in Sage products that automates bookkeeping tasks, surfaces cash flow insights, and answers finance queries.",
+            positives: ["Embedded in Sage — no extra integration", "Cash flow forecasting and anomaly alerts", "Accessible for SMB finance teams"],
+            negatives: ["Only available to Sage product users", "Feature depth varies across Sage product lines", "AI features still rolling out across the suite"],
+            price: ["Included in Sage Intacct and Sage 50 plans", "SMB plans from ~$10/mo, enterprise custom"] },
+          { name: "Planful", url: "https://planful.com", icon: "https://www.google.com/s2/favicons?domain=planful.com&sz=64",
+            description: "Financial performance management platform with AI-assisted planning, forecasting, consolidation, and reporting for finance teams.",
+            positives: ["Purpose-built for FP&A — not a bolt-on AI", "Strong scenario modelling and driver-based planning", "Integrates with ERPs, CRMs, and data warehouses"],
+            negatives: ["Mid-market and enterprise pricing", "Initial implementation can be complex", "Requires finance expertise to get full value"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Cube", url: "https://www.cubesoftware.com", icon: "https://www.google.com/s2/favicons?domain=cubesoftware.com&sz=64",
+            description: "FP&A platform that connects spreadsheets to a central financial data hub with AI-assisted analysis and automated reporting.",
+            positives: ["Works with existing Excel/Google Sheets workflows", "Fast implementation vs heavy FP&A tools", "Centralises financial data without replacing familiar tools"],
+            negatives: ["Less powerful than Planful for complex modelling", "Better suited to SMB/mid-market than enterprise", "Reporting customisation has limits"],
+            price: ["Starter — from $1,500/mo", "Enterprise — custom"] },
+        ]
+      },
+      health: {
+        label: "Healthcare",
+        tools: [
+          { name: "Nabla Copilot", url: "https://www.nabla.com", icon: "https://www.google.com/s2/favicons?domain=nabla.com&sz=64",
+            description: "AI ambient scribe that listens to patient consultations and automatically generates structured clinical notes in the EHR.",
+            positives: ["Saves clinicians 2+ hours of documentation daily", "Works with most EHR systems", "HIPAA compliant and SOC 2 certified"],
+            negatives: ["Requires good audio capture in clinical settings", "Needs clinician review before finalising notes", "Not yet available in all languages/specialties"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Nuance DAX", url: "https://www.nuance.com/healthcare/ambient-clinical-intelligence.html", icon: "https://www.google.com/s2/favicons?domain=nuance.com&sz=64",
+            description: "Microsoft's ambient clinical intelligence solution automating medical documentation across specialties within Epic and other EHRs.",
+            positives: ["Deep EHR integration, especially Epic", "Trusted by major health systems globally", "Reduces burnout by eliminating post-visit note writing"],
+            negatives: ["Enterprise pricing — not accessible for small practices", "Rollout requires significant IT support", "Microsoft ecosystem dependency"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Suki AI", url: "https://www.suki.ai", icon: "https://www.google.com/s2/favicons?domain=suki.ai&sz=64",
+            description: "AI voice assistant for clinicians handling note dictation, code suggestions, and clinical Q&A during patient care.",
+            positives: ["Voice-first interface fits clinical workflow", "ICD-10 and CPT code suggestions improve billing accuracy", "Works across 50+ EHR platforms"],
+            negatives: ["Voice accuracy varies in noisy environments", "Smaller install base than Nuance", "Some specialty terminology needs training"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Glass Health", url: "https://glass.health", icon: "https://www.google.com/s2/favicons?domain=glass.health&sz=64",
+            description: "AI clinical decision support tool that generates differential diagnoses and clinical plans from patient summaries for physicians.",
+            positives: ["Rapidly generates evidence-based differentials", "Useful for complex or unfamiliar presentations", "Clean, intuitive interface for busy clinicians"],
+            negatives: ["AI output must always be verified by clinician", "Limited EHR integration currently", "Primarily for diagnostics — not a full workflow tool"],
+            price: ["Free beta access currently available"] },
+          { name: "Abridge", url: "https://www.abridge.com", icon: "https://www.google.com/s2/favicons?domain=abridge.com&sz=64",
+            description: "AI medical conversation platform that records and summarises patient-clinician conversations into structured clinical notes within Epic.",
+            positives: ["Native Epic integration — widely deployed", "Produces high-quality structured SOAP notes", "Patients can receive their own visit summaries"],
+            negatives: ["Currently limited to Epic environments", "Requires reliable audio capture", "Enterprise contract required"],
+            price: ["Custom pricing — contact sales"] },
+        ]
+      },
+      hr: {
+        label: "HR & Recruitment",
+        tools: [
+          { name: "Greenhouse + AI", url: "https://www.greenhouse.io", icon: "https://www.google.com/s2/favicons?domain=greenhouse.io&sz=64",
+            description: "Leading ATS with AI-enhanced candidate sourcing, job description optimisation, and structured interview features for scalable hiring.",
+            positives: ["Best-in-class structured hiring workflows", "AI de-biasing tools improve fair evaluation", "Rich integration ecosystem (500+ tools)"],
+            negatives: ["Expensive for small companies", "AI features still maturing vs pure-play AI tools", "Implementation takes significant time"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "HireVue", url: "https://www.hirevue.com", icon: "https://www.google.com/s2/favicons?domain=hirevue.com&sz=64",
+            description: "Video interviewing and AI assessment platform that evaluates candidates via async video interviews and game-based assessments.",
+            positives: ["Scales screening across thousands of candidates", "Reduces time-to-interview dramatically", "Structured assessments improve consistency"],
+            negatives: ["AI facial analysis features have drawn bias concerns", "Candidates can find video-only process impersonal", "Assessment validity varies by role type"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Workday AI", url: "https://www.workday.com/en-gb/artificial-intelligence.html", icon: "https://www.google.com/s2/favicons?domain=workday.com&sz=64",
+            description: "AI capabilities embedded across Workday HCM for skills intelligence, workforce planning, and talent mobility recommendations.",
+            positives: ["Native to Workday — no integration overhead", "Skills Cloud maps and matches talent across the org", "Strong workforce planning and succession tools"],
+            negatives: ["Only valuable if already on Workday", "Significant Workday licence costs", "AI features require data maturity to be effective"],
+            price: ["Included in Workday HCM — custom pricing"] },
+          { name: "Paradox (Olivia)", url: "https://www.paradox.ai", icon: "https://www.google.com/s2/favicons?domain=paradox.ai&sz=64",
+            description: "Conversational AI recruiting assistant that automates candidate screening, interview scheduling, and onboarding via chat.",
+            positives: ["24/7 candidate engagement via chat and SMS", "Dramatically reduces time-to-schedule interviews", "High candidate satisfaction scores"],
+            negatives: ["Works best for high-volume repeatable hiring", "Less suited for complex or senior role recruitment", "Requires integration with existing ATS"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "Eightfold AI", url: "https://eightfold.ai", icon: "https://www.google.com/s2/favicons?domain=eightfold.ai&sz=64",
+            description: "Talent intelligence platform using deep learning to match candidates to roles based on potential and skills, not just keywords.",
+            positives: ["Skills-based matching reduces keyword bias", "Strong internal mobility and talent rediscovery features", "Covers full talent lifecycle from hiring to retention"],
+            negatives: ["Enterprise-only — high price point", "Complex implementation and data requirements", "Black-box AI can be hard to explain to hiring managers"],
+            price: ["Custom pricing — contact sales"] },
+        ]
+      },
+      legal: {
+        label: "Legal",
+        tools: [
+          { name: "Harvey AI", url: "https://www.harvey.ai", icon: "https://www.google.com/s2/favicons?domain=harvey.ai&sz=64",
+            description: "Generative AI platform built for elite law firms, handling contract analysis, legal research, due diligence, and document drafting.",
+            positives: ["Purpose-built for complex legal workflows", "Handles large document sets with precision", "Used by top AmLaw 100 firms"],
+            negatives: ["Enterprise pricing — not accessible to small firms", "Requires legal expertise to validate outputs", "Primarily English-language focus"],
+            price: ["Custom pricing — contact sales"] },
+          { name: "CoCounsel", url: "https://legal.thomsonreuters.com/en/products/coCounsel", icon: "https://www.google.com/s2/favicons?domain=thomsonreuters.com&sz=64",
+            description: "Thomson Reuters' AI legal assistant for document review, contract analysis, deposition prep, and legal research within Westlaw.",
+            positives: ["Backed by Thomson Reuters' trusted legal data", "Westlaw integration provides authoritative sourcing", "Document review handles thousands of pages quickly"],
+            negatives: ["Requires Thomson Reuters subscription", "Premium pricing tier", "Best suited to litigation and corporate legal teams"],
+            price: ["Included in select Thomson Reuters plans — contact sales"] },
+          { name: "Spellbook", url: "https://www.spellbook.legal", icon: "https://www.google.com/s2/favicons?domain=spellbook.legal&sz=64",
+            description: "AI contract drafting and review tool embedded in Microsoft Word that suggests clauses, flags risk, and accelerates negotiation.",
+            positives: ["Lives inside Word — zero workflow change", "Fast contract redlining and clause suggestions", "Good value for small to mid-sized legal teams"],
+            negatives: ["Limited to contract work — not a full legal AI suite", "Output quality depends on input document quality", "Less powerful than Harvey for complex transactions"],
+            price: ["Starter — $69/user/mo", "Professional — $159/user/mo", "Enterprise — custom"] },
+          { name: "Lexis+ AI", url: "https://www.lexisnexis.com/en-us/products/lexis-plus-ai.page", icon: "https://www.google.com/s2/favicons?domain=lexisnexis.com&sz=64",
+            description: "LexisNexis' generative AI research assistant for legal research, drafting, and case strategy grounded in authoritative legal sources.",
+            positives: ["Grounded in Lexis's authoritative legal database", "Cited responses reduce hallucination risk", "Covers research, drafting, and contract analysis"],
+            negatives: ["Requires LexisNexis subscription", "Research depth can vary by jurisdiction", "Interface more traditional than newer AI tools"],
+            price: ["Included in Lexis+ plans — contact sales for AI pricing"] },
+          { name: "Ironclad AI", url: "https://ironcladapp.com", icon: "https://www.google.com/s2/favicons?domain=ironcladapp.com&sz=64",
+            description: "AI-powered contract lifecycle management for automating contract creation, negotiation, approval, and obligation tracking.",
+            positives: ["End-to-end CLM — not just review or drafting", "AI assists across the full contract workflow", "Strong workflow automation and approvals engine"],
+            negatives: ["Enterprise pricing", "Implementation is a significant project", "Best value requires replacing existing CLM tools"],
+            price: ["Custom pricing — contact sales"] },
+        ]
+      },
+      marketing: {
+        label: "Marketing",
+        tools: [
+          { name: "Jasper", url: "https://www.jasper.ai", icon: "https://www.google.com/s2/favicons?domain=jasper.ai&sz=64",
+            description: "AI content platform for marketing teams to create on-brand blog posts, ads, emails, and social content at scale.",
+            positives: ["Strong brand voice training keeps output on-brand", "Wide range of marketing content templates", "Team collaboration features built in"],
+            negatives: ["More expensive than ChatGPT for similar output", "Factual accuracy requires human review", "Less useful for technical or research content"],
+            price: ["Creator — $49/user/mo", "Pro — $69/user/mo (up to 5 users)", "Business — custom"] },
+          { name: "HubSpot AI", url: "https://www.hubspot.com/artificial-intelligence", icon: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64",
+            description: "AI tools embedded across HubSpot CRM, Marketing Hub, and Sales Hub for content generation, lead scoring, and predictive analytics.",
+            positives: ["Native to HubSpot — unified data across marketing and sales", "AI content generation in email and page editors", "Predictive lead scoring improves conversion focus"],
+            negatives: ["Full AI features require higher HubSpot tiers", "HubSpot ecosystem lock-in", "AI quality occasionally inconsistent on complex tasks"],
+            price: ["Starter — from $20/mo", "Professional — from $800/mo", "Enterprise — from $3,600/mo"] },
+          { name: "Copy.ai", url: "https://www.copy.ai", icon: "https://www.google.com/s2/favicons?domain=copy.ai&sz=64",
+            description: "AI-powered GTM platform for generating sales and marketing copy, automating content workflows, and running multi-step AI pipelines.",
+            positives: ["GTM workflow automation beyond simple copy", "Generous free tier for individuals", "Wide template library for sales and marketing"],
+            negatives: ["Output can be generic without heavy prompting", "Workflow builder has a learning curve", "Less brand customisation than Jasper"],
+            price: ["Free (2,000 words/mo)", "Starter — $49/mo", "Advanced — $249/mo", "Enterprise — custom"] },
+          { name: "Surfer SEO", url: "https://surferseo.com", icon: "https://www.google.com/s2/favicons?domain=surferseo.com&sz=64",
+            description: "AI SEO content optimisation tool that analyses top-ranking pages and guides writers to produce content that ranks higher in search.",
+            positives: ["Data-driven content scoring improves SEO performance", "Content Editor integrates with Google Docs and WordPress", "Keyword research and clustering built in"],
+            negatives: ["Focuses on SEO signals — content can feel formulaic", "Pricing is high for individual bloggers", "Over-reliance can lead to keyword-stuffed content"],
+            price: ["Essential — $99/mo", "Scale — $219/mo", "Enterprise — custom"] },
+          { name: "Semrush AI", url: "https://www.semrush.com/ai-features", icon: "https://www.google.com/s2/favicons?domain=semrush.com&sz=64",
+            description: "AI-enhanced features across Semrush's marketing suite for SEO, PPC, content marketing, competitor analysis, and social media management.",
+            positives: ["All-in-one digital marketing platform", "AI writing assistant integrated across the suite", "Unrivalled competitor and keyword intelligence data"],
+            negatives: ["Overwhelming — feature bloat for smaller teams", "Premium pricing for full access", "AI content tools secondary to its core analytics"],
+            price: ["Pro — $139.95/mo", "Guru — $249.95/mo", "Business — $499.95/mo"] },
+        ]
+      },
+      software: {
+        label: "Software Development",
+        tools: [
+          { name: "GitHub Copilot", url: "https://github.com/features/copilot", icon: "https://www.google.com/s2/favicons?domain=github.com&sz=64",
+            description: "AI pair programmer by GitHub and OpenAI that autocompletes code, suggests functions, and generates tests inline in your IDE.",
+            positives: ["Deep IDE integration (VS Code, JetBrains, Vim, etc.)", "Vast public code training — strong context awareness", "Copilot Chat handles explanation and debugging"],
+            negatives: ["Can suggest outdated or insecure code patterns", "Requires code review — not a replacement for engineering judgement", "Privacy concerns around code sent to the cloud"],
+            price: ["Individual — $10/mo", "Business — $19/user/mo", "Enterprise — $39/user/mo"] },
+          { name: "Cursor", url: "https://www.cursor.sh", icon: "https://www.google.com/s2/favicons?domain=cursor.sh&sz=64",
+            description: "AI-first code editor (VS Code fork) with deep multi-file editing, codebase understanding, and natural language code generation.",
+            positives: ["Multi-file edits with full codebase context", "Composer mode handles complex multi-step changes", "Fast iteration — feels like pair programming with a senior dev"],
+            negatives: ["VS Code fork — some extensions may behave differently", "Privacy-conscious teams may dislike codebase indexing", "Can be overconfident on complex architectural decisions"],
+            price: ["Hobby — Free", "Pro — $20/mo", "Business — $40/user/mo"] },
+          { name: "Claude (Anthropic)", url: "https://www.anthropic.com", icon: "https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
+            description: "Anthropic's AI assistant with a 200K token context window, excelling at code review, architecture discussions, and complex debugging.",
+            positives: ["200K token context — handles entire codebases", "Excellent reasoning through complex bugs and architecture", "Strong safety and instruction-following behaviour"],
+            negatives: ["No native IDE plugin (relies on third-party integrations)", "API can be slower than GPT-4 at peak times", "Less training data on niche or proprietary frameworks"],
+            price: ["Claude.ai Free", "Pro — $20/mo", "Team — $30/user/mo", "API — from $3/MTok"] },
+          { name: "ChatGPT", url: "https://chat.openai.com", icon: "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
+            description: "OpenAI's general-purpose AI assistant widely used for code generation, debugging, documentation, and technical Q&A by developers.",
+            positives: ["Massive community — huge library of prompts and guides", "Code Interpreter extends functionality significantly", "Broadly capable across languages and frameworks"],
+            negatives: ["Context window smaller than Claude for code tasks", "Knowledge cutoff limits awareness of latest libraries", "Free tier rate-limited during peak hours"],
+            price: ["Free (GPT-4o limited)", "Plus — $20/mo", "Team — $30/user/mo", "Enterprise — custom"] },
+          { name: "Tabnine", url: "https://www.tabnine.com", icon: "https://www.google.com/s2/favicons?domain=tabnine.com&sz=64",
+            description: "AI code completion focused on privacy and security, offering local model options and enterprise controls for sensitive codebases.",
+            positives: ["Local/private model options for air-gapped environments", "Strong enterprise security and compliance controls", "Learns from your own codebase for personalised suggestions"],
+            negatives: ["Completion quality behind Copilot and Cursor on general tasks", "Smaller model = less contextual awareness on complex code", "Less community activity than competitors"],
+            price: ["Free (limited completions)", "Pro — $12/user/mo", "Enterprise — custom"] },
+        ]
+      },
+    };
+
+    // ── Render table ───────────────────────────────────────────────────────
+    function renderTable() {
+      const industry = document.getElementById('industry-select').value;
+      const { label, tools } = data[industry];
+
+      const now = new Date();
+      document.getElementById('updated-tag').textContent =
+        `Updated ${now.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}`;
+
+      const tbody = document.getElementById('rankings-body');
+      tbody.innerHTML = '';
+      tools.forEach((tool, i) => {
+        const rank = i + 1;
+        const row = document.createElement('tr');
+        const isMobile = window.matchMedia('(pointer: coarse)').matches;
+        const nameCell = isMobile
+          ? `<span>${tool.name}</span>`
+          : `<a href="${tool.url}" target="_blank" rel="noopener noreferrer">${tool.name}</a>`;
+        row.innerHTML = `
+          <td class="rank" data-rank="${rank}">${rank}</td>
+          <td class="tool-name">${nameCell}</td>
+        `;
+        if (isMobile) {
+          row.style.cursor = 'pointer';
+          row.addEventListener('click', () => openToolModal(tool, rank));
+        } else {
+          row.addEventListener('mouseenter', e => showTooltip(e, tool, rank));
+          row.addEventListener('mousemove', positionTooltip);
+          row.addEventListener('mouseleave', hideTooltip);
+        }
+        tbody.appendChild(row);
+      });
+    }
+
+    // ── Tooltip ────────────────────────────────────────────────────────────
+    const tt = document.getElementById('tt');
+    const rankLabels = ['1st', '2nd', '3rd', '4th', '5th'];
+
+    function showTooltip(e, tool, rank) {
+      document.getElementById('tt-icon').src = tool.icon;
+      document.getElementById('tt-icon').alt = tool.name;
+      document.getElementById('tt-name').textContent = tool.name;
+      document.getElementById('tt-rank').textContent = `Ranked ${rankLabels[rank - 1]}`;
+      document.getElementById('tt-desc').textContent = tool.description;
+      document.getElementById('tt-pos').innerHTML = tool.positives.map(p => `<li>${p}</li>`).join('');
+      document.getElementById('tt-neg').innerHTML = tool.negatives.map(n => `<li>${n}</li>`).join('');
+      const priceSection = document.getElementById('tt-price-section');
+      if (tool.price && tool.price.length) {
+        document.getElementById('tt-price').innerHTML = tool.price.map(p => `<li>${p}</li>`).join('');
+        priceSection.style.display = '';
+      } else {
+        priceSection.style.display = 'none';
+      }
+      tt.classList.add('visible');
+      positionTooltip(e);
+    }
+
+    function positionTooltip(e) {
+      const W = 290, margin = 14;
+      let x = e.clientX + margin;
+      let y = e.clientY + margin;
+      if (x + W > window.innerWidth - margin) x = e.clientX - W - margin;
+      const h = tt.offsetHeight;
+      if (y + h > window.innerHeight - margin) y = window.innerHeight - h - margin;
+      tt.style.left = x + 'px';
+      tt.style.top  = y + 'px';
+    }
+
+    function hideTooltip() { tt.classList.remove('visible'); }
+
+    // ── Tool modal (mobile) ────────────────────────────────────────────────
+    function openToolModal(tool, rank) {
+      document.getElementById('tm-icon').src = tool.icon;
+      document.getElementById('tm-icon').alt = tool.name;
+      document.getElementById('tm-name').textContent = tool.name;
+      document.getElementById('tm-rank').textContent = `Ranked ${rankLabels[rank - 1]}`;
+      document.getElementById('tm-desc').textContent = tool.description;
+      document.getElementById('tm-pos').innerHTML = tool.positives.map(p => `<li>${p}</li>`).join('');
+      document.getElementById('tm-neg').innerHTML = tool.negatives.map(n => `<li>${n}</li>`).join('');
+      const priceSection = document.getElementById('tm-price-section');
+      if (tool.price && tool.price.length) {
+        document.getElementById('tm-price').innerHTML = tool.price.map(p => `<li>${p}</li>`).join('');
+        priceSection.style.display = '';
+      } else {
+        priceSection.style.display = 'none';
+      }
+      document.getElementById('tm-link').href = tool.url;
+      openModal('tool-modal');
+    }
+
+    // ── Modal helpers ──────────────────────────────────────────────────────
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeModal(overlay.id);
+      });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
+      }
+    });
+
+    // ── Form stubs ─────────────────────────────────────────────────────────
+    function handleNewsletter(e) {
+      e.preventDefault();
+      const input = e.target.querySelector('input[type="email"]');
+      const btn   = e.target.querySelector('button');
+      btn.textContent  = 'Subscribed!';
+      btn.style.background = 'var(--green)';
+      input.disabled = true;
+      btn.disabled   = true;
+    }
+
+    function handleContact(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.textContent = 'Message sent!';
+      btn.style.background = 'var(--green)';
+      btn.disabled = true;
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    renderTable();
+  </script>
+</body>
+</html>
